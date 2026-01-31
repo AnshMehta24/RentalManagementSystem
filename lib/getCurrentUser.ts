@@ -13,10 +13,9 @@ export async function getCurrentUser() {
     const { payload } = await jwtVerify(token, secret);
 
     return {
-      id: payload.userId as string,
+      id: payload.userId as number,
       email: payload.email as string,
-      role: payload.role as "SUPER_ADMIN" | "ADMIN" | "MEMBER",
-      organizationId: payload.organizationId as string | null,
+      role: payload.role as "VENDOR" | "CUSTOMER" | "ADMIN",
     };
   } catch {
     return null;

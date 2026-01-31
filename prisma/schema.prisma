@@ -90,13 +90,29 @@ enum NotificationType {
   PAYMENT_CONFIRMATION
 }
 
+enum PeriodUnit {
+  HOUR
+  DAY
+  WEEK
+  MONTH
+  YEAR
+}
+
+enum AttributeDisplayType {
+  RADIO
+  PILLS
+  CHECKBOX
+  IMAGE
+}
+
 model User {
   id   Int      @id @default(autoincrement())
   role UserRole
-  profileLogo  String?
-  name     String
-  email    String @unique
-  password String
+
+  profileLogo String?
+  name        String
+  email       String  @unique
+  password    String
 
   companyName String?
   companyLogo String?
@@ -116,12 +132,14 @@ model User {
   notifications Notification[]
   activities    ActivityLog[]
 
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
   invoices   Invoice[]
   pickups    Pickup[]
   deliveries Delivery[]
   returns    Return[]
+
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  vendorQuotations Quotation[] @relation("VendorQuotations")
 }
 
 model Address {
@@ -161,6 +179,29 @@ model VendorStaff {
   @@unique([vendorId, staffId])
 }
 
+model Attribute {
+  id          Int                  @id @default(autoincrement())
+  name        String               @unique
+  displayType AttributeDisplayType
+  isActive    Boolean              @default(true)
+
+  values                 AttributeValue[]
+  variantAttributeValues VariantAttributeValue[]
+}
+
+model AttributeValue {
+  id          Int     @id @default(autoincrement())
+  attributeId Int
+  value       String
+  extraPrice  Float   @default(0)
+  isActive    Boolean @default(true)
+
+  attribute              Attribute               @relation(fields: [attributeId], references: [id])
+  variantAttributeValues VariantAttributeValue[]
+
+  @@unique([attributeId, value])
+}
+
 model Product {
   id       Int @id @default(autoincrement())
   vendorId Int
@@ -170,32 +211,11 @@ model Product {
   isRentable  Boolean @default(true)
   published   Boolean @default(true)
 
-  vendor User @relation("VendorProducts", fields: [vendorId], references: [id])
-
-  attributes ProductAttribute[]
-  variants   ProductVariant[]
+  vendor   User             @relation("VendorProducts", fields: [vendorId], references: [id])
+  variants ProductVariant[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-model ProductAttribute {
-  id        Int    @id @default(autoincrement())
-  productId Int
-  name      String
-
-  product                Product                 @relation(fields: [productId], references: [id])
-  values                 ProductAttributeValue[]
-  variantAttributeValues VariantAttributeValue[]
-}
-
-model ProductAttributeValue {
-  id          Int    @id @default(autoincrement())
-  attributeId Int
-  value       String
-
-  attribute              ProductAttribute        @relation(fields: [attributeId], references: [id])
-  variantAttributeValues VariantAttributeValue[]
 }
 
 model ProductVariant {
@@ -209,35 +229,41 @@ model ProductVariant {
 
   product Product @relation(fields: [productId], references: [id])
 
-  attributes     VariantAttributeValue[]
-  prices         RentalPrice[]
-  reservations   Reservation[]
-  inventory      InventoryLog[]
+  attributes   VariantAttributeValue[]
+  prices       RentalPrice[]
+  reservations Reservation[]
+  inventory    InventoryLog[]
+
   quotationItems QuotationItem[]
   orderItems     OrderItem[]
 }
 
 model VariantAttributeValue {
-  id          Int @id @default(autoincrement())
-  variantId   Int
-  attributeId Int
-  valueId     Int
+  id               Int @id @default(autoincrement())
+  variantId        Int
+  attributeId      Int
+  attributeValueId Int
 
-  variant   ProductVariant        @relation(fields: [variantId], references: [id])
-  attribute ProductAttribute      @relation(fields: [attributeId], references: [id])
-  value     ProductAttributeValue @relation(fields: [valueId], references: [id])
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  attribute Attribute      @relation(fields: [attributeId], references: [id])
+  value     AttributeValue @relation(fields: [attributeValueId], references: [id])
 
   @@unique([variantId, attributeId])
 }
 
 model RentalPeriod {
-  id       Int     @id @default(autoincrement())
+  id       Int        @id @default(autoincrement())
   name     String
-  unit     String
-  isActive Boolean @default(true)
+  duration Int
+  unit     PeriodUnit
+  isActive Boolean    @default(true)
 
-  createdAt    DateTime      @default(now())
   rentalPrices RentalPrice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([duration, unit])
 }
 
 model RentalPrice {
@@ -262,13 +288,14 @@ model Coupon {
   validTill   DateTime
   isActive    Boolean    @default(true)
 
-  createdAt  DateTime    @default(now())
   quotations Quotation[]
+  createdAt  DateTime    @default(now())
 }
 
 model Quotation {
   id         Int             @id @default(autoincrement())
   customerId Int
+  vendorId   Int
   status     QuotationStatus @default(DRAFT)
 
   couponId Int?
@@ -278,6 +305,7 @@ model Quotation {
   items    QuotationItem[]
   order    RentalOrder?
 
+  vendor    User     @relation("VendorQuotations", fields: [vendorId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -377,9 +405,8 @@ model Invoice {
   rentalAmount    Float
   securityDeposit Float
   deliveryCharge  Float
-
-  totalAmount Float
-  paidAmount  Float @default(0)
+  totalAmount     Float
+  paidAmount      Float @default(0)
 
   status InvoiceStatus @default(DRAFT)
 
@@ -396,7 +423,6 @@ model Payment {
 
   amount Float
   for    PaymentFor
-
   status PaymentStatus
 
   stripePaymentIntentId   String  @unique
@@ -452,8 +478,7 @@ model Notification {
   message String
   isRead  Boolean          @default(false)
 
-  user User @relation(fields: [userId], references: [id])
-
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }
 
@@ -464,7 +489,6 @@ model ActivityLog {
   entity   String
   entityId Int?
 
-  user User? @relation(fields: [userId], references: [id])
-
+  user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }
