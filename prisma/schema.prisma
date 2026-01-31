@@ -1,0 +1,457 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  VENDOR
+  CUSTOMER
+}
+
+enum AddressType {
+  BILLING
+  SHIPPING
+  PICKUP
+}
+
+enum FulfillmentType {
+  STORE_PICKUP
+  DELIVERY
+}
+
+enum StaffPermission {
+  MANAGE_PRODUCTS
+  MANAGE_ORDERS
+  MANAGE_PICKUP
+  MANAGE_RETURN
+  MANAGE_INVOICES
+  VIEW_REPORTS
+}
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  CONFIRMED
+  CANCELLED
+}
+
+enum OrderStatus {
+  CONFIRMED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  PARTIALLY_PAID
+  PAID
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum PaymentFor {
+  RENT
+  SECURITY_DEPOSIT
+}
+
+enum StockStatus {
+  AVAILABLE
+  RESERVED
+  WITH_CUSTOMER
+}
+
+enum CouponType {
+  FLAT
+  PERCENTAGE
+}
+
+enum NotificationType {
+  RETURN_REMINDER
+  LATE_ALERT
+  PAYMENT_CONFIRMATION
+}
+
+model User {
+  id   Int      @id @default(autoincrement())
+  role UserRole
+
+  name     String
+  email    String @unique
+  password String
+
+  companyName String?
+  gstin       String?
+
+  addresses Address[]
+
+  quotations Quotation[]   @relation("CustomerQuotations")
+  orders     RentalOrder[] @relation("CustomerOrders")
+
+  products   Product[]     @relation("VendorProducts")
+  staff      VendorStaff[] @relation("VendorOwner")
+  employedAt VendorStaff[] @relation("VendorStaff")
+
+  notifications Notification[]
+  activities    ActivityLog[]
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  invoices   Invoice[]
+  pickups    Pickup[]
+  deliveries Delivery[]
+  returns    Return[]
+}
+
+model Address {
+  id     Int         @id @default(autoincrement())
+  userId Int
+  type   AddressType
+
+  name    String?
+  line1   String
+  line2   String?
+  city    String
+  state   String
+  country String
+  pincode String
+
+  isDefault Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VendorStaff {
+  id       Int @id @default(autoincrement())
+  vendorId Int
+  staffId  Int
+
+  permissions StaffPermission[]
+  isActive    Boolean           @default(true)
+
+  vendor User @relation("VendorOwner", fields: [vendorId], references: [id])
+  staff  User @relation("VendorStaff", fields: [staffId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([vendorId, staffId])
+}
+
+model Product {
+  id       Int @id @default(autoincrement())
+  vendorId Int
+
+  name        String
+  description String?
+  isRentable  Boolean @default(true)
+  published   Boolean @default(true)
+
+  vendor User @relation("VendorProducts", fields: [vendorId], references: [id])
+
+  attributes ProductAttribute[]
+  variants   ProductVariant[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductAttribute {
+  id        Int    @id @default(autoincrement())
+  productId Int
+  name      String
+
+  product                Product                 @relation(fields: [productId], references: [id])
+  values                 ProductAttributeValue[]
+  variantAttributeValues VariantAttributeValue[]
+}
+
+model ProductAttributeValue {
+  id          Int    @id @default(autoincrement())
+  attributeId Int
+  value       String
+
+  attribute              ProductAttribute        @relation(fields: [attributeId], references: [id])
+  variantAttributeValues VariantAttributeValue[]
+}
+
+model ProductVariant {
+  id        Int @id @default(autoincrement())
+  productId Int
+
+  sku       String?
+  quantity  Int
+  costPrice Float
+  salePrice Float
+
+  product Product @relation(fields: [productId], references: [id])
+
+  attributes     VariantAttributeValue[]
+  prices         RentalPrice[]
+  reservations   Reservation[]
+  inventory      InventoryLog[]
+  quotationItems QuotationItem[]
+  orderItems     OrderItem[]
+}
+
+model VariantAttributeValue {
+  id          Int @id @default(autoincrement())
+  variantId   Int
+  attributeId Int
+  valueId     Int
+
+  variant   ProductVariant        @relation(fields: [variantId], references: [id])
+  attribute ProductAttribute      @relation(fields: [attributeId], references: [id])
+  value     ProductAttributeValue @relation(fields: [valueId], references: [id])
+
+  @@unique([variantId, attributeId])
+}
+
+model RentalPeriod {
+  id       Int     @id @default(autoincrement())
+  name     String
+  unit     String
+  isActive Boolean @default(true)
+
+  createdAt    DateTime      @default(now())
+  rentalPrices RentalPrice[]
+}
+
+model RentalPrice {
+  id        Int   @id @default(autoincrement())
+  variantId Int
+  periodId  Int
+  price     Float
+
+  variant ProductVariant @relation(fields: [variantId], references: [id])
+  period  RentalPeriod   @relation(fields: [periodId], references: [id])
+
+  @@unique([variantId, periodId])
+}
+
+model Coupon {
+  id          Int        @id @default(autoincrement())
+  code        String     @unique
+  type        CouponType
+  value       Float
+  maxDiscount Float?
+  validFrom   DateTime
+  validTill   DateTime
+  isActive    Boolean    @default(true)
+
+  createdAt  DateTime    @default(now())
+  quotations Quotation[]
+}
+
+model Quotation {
+  id         Int             @id @default(autoincrement())
+  customerId Int
+  status     QuotationStatus @default(DRAFT)
+
+  couponId Int?
+  coupon   Coupon? @relation(fields: [couponId], references: [id])
+
+  customer User            @relation("CustomerQuotations", fields: [customerId], references: [id])
+  items    QuotationItem[]
+  order    RentalOrder?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model QuotationItem {
+  id          Int @id @default(autoincrement())
+  quotationId Int
+  variantId   Int
+
+  quantity    Int
+  rentalStart DateTime
+  rentalEnd   DateTime
+  price       Float
+
+  quotation Quotation      @relation(fields: [quotationId], references: [id])
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+}
+
+model RentalOrder {
+  id          Int @id @default(autoincrement())
+  quotationId Int @unique
+  customerId  Int
+
+  status          OrderStatus     @default(CONFIRMED)
+  fulfillmentType FulfillmentType
+
+  pickupAddressId   Int? // Vendor store
+  deliveryAddressId Int? // Customer address
+
+  couponCode  String?
+  discountAmt Float   @default(0)
+
+  customer  User      @relation("CustomerOrders", fields: [customerId], references: [id])
+  quotation Quotation @relation(fields: [quotationId], references: [id])
+
+  items        OrderItem[]
+  reservations Reservation[]
+  invoice      Invoice?
+  pickup       Pickup?
+  delivery     Delivery?
+  return       Return?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id        Int @id @default(autoincrement())
+  orderId   Int
+  variantId Int
+
+  quantity    Int
+  rentalStart DateTime
+  rentalEnd   DateTime
+  price       Float
+
+  order   RentalOrder    @relation(fields: [orderId], references: [id])
+  variant ProductVariant @relation(fields: [variantId], references: [id])
+}
+
+model Reservation {
+  id        Int @id @default(autoincrement())
+  variantId Int
+  orderId   Int
+
+  startDate    DateTime
+  endDate      DateTime
+  quantity     Int
+  availableQty Int
+  status       StockStatus @default(RESERVED)
+
+  variant ProductVariant @relation(fields: [variantId], references: [id])
+  order   RentalOrder    @relation(fields: [orderId], references: [id])
+
+  @@index([variantId, startDate, endDate])
+}
+
+model InventoryLog {
+  id        Int  @id @default(autoincrement())
+  variantId Int
+  orderId   Int?
+
+  changeQty Int
+  reason    String
+
+  variant ProductVariant @relation(fields: [variantId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Invoice {
+  id              Int @id @default(autoincrement())
+  orderId         Int @unique
+  createdByUserId Int
+
+  rentalAmount    Float
+  securityDeposit Float
+  totalAmount     Float
+  paidAmount      Float @default(0)
+
+  status InvoiceStatus @default(DRAFT)
+
+  order     RentalOrder @relation(fields: [orderId], references: [id])
+  createdBy User        @relation(fields: [createdByUserId], references: [id])
+  payments  Payment[]
+
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id        Int @id @default(autoincrement())
+  invoiceId Int
+
+  amount Float
+  for    PaymentFor
+  method String
+  status PaymentStatus
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Pickup {
+  id              Int      @id @default(autoincrement())
+  orderId         Int      @unique
+  handledByUserId Int
+  pickedAt        DateTime @default(now())
+
+  order     RentalOrder @relation(fields: [orderId], references: [id])
+  handledBy User        @relation(fields: [handledByUserId], references: [id])
+}
+
+model Delivery {
+  id              Int  @id @default(autoincrement())
+  orderId         Int  @unique
+  handledByUserId Int?
+
+  shippedAt      DateTime?
+  deliveredAt    DateTime?
+  deliveryCharge Float     @default(0)
+
+  order     RentalOrder @relation(fields: [orderId], references: [id])
+  handledBy User?       @relation(fields: [handledByUserId], references: [id])
+}
+
+model Return {
+  id              Int @id @default(autoincrement())
+  orderId         Int @unique
+  handledByUserId Int
+
+  returnedAt      DateTime
+  lateFee         Float    @default(0)
+  damageFee       Float    @default(0)
+  depositRefunded Float    @default(0)
+
+  order     RentalOrder @relation(fields: [orderId], references: [id])
+  handledBy User        @relation(fields: [handledByUserId], references: [id])
+}
+
+model Notification {
+  id      Int              @id @default(autoincrement())
+  userId  Int
+  type    NotificationType
+  message String
+  isRead  Boolean          @default(false)
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id       Int    @id @default(autoincrement())
+  userId   Int?
+  action   String
+  entity   String
+  entityId Int?
+
+  user User? @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
