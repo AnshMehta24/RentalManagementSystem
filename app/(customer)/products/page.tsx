@@ -7,6 +7,7 @@ async function getProducts() {
     const products = await prisma.product.findMany({
       where: {
         published: true,
+        vendorId: 3,
         isRentable: true,
       },
       include: {

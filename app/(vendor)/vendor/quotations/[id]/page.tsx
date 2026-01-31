@@ -67,9 +67,9 @@ export default async function QuotationDetailPage({
 
   if (currentUser.role !== "VENDOR") {
     return (
-      <div className="container mx-auto py-12 px-4 text-center">
-        <h1 className="text-3xl font-bold text-red-700">Access Denied</h1>
-        <p className="mt-4 text-lg">Only vendors can view quotation details.</p>
+      <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm text-center">
+        <h1 className="text-2xl font-bold text-gray-900">Access Denied</h1>
+        <p className="mt-4 text-gray-600">Only vendors can view quotation details.</p>
       </div>
     );
   }
@@ -85,9 +85,9 @@ export default async function QuotationDetailPage({
 
   if (quotation.vendorId !== currentUser.id) {
     return (
-      <div className="container mx-auto py-12 px-4 text-center">
-        <h1 className="text-3xl font-bold text-red-700">Not Authorized</h1>
-        <p className="mt-4 text-lg">
+      <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm text-center">
+        <h1 className="text-2xl font-bold text-gray-900">Not Authorized</h1>
+        <p className="mt-4 text-gray-600">
           This quotation belongs to another vendor.
         </p>
       </div>
