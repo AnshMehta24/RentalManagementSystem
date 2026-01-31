@@ -6,7 +6,6 @@ export async function POST() {
     { status: 200 }
   );
 
-  // Clear the auth token cookie
   response.cookies.set("auth_token", "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

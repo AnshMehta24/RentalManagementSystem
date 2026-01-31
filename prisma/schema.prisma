@@ -90,6 +90,7 @@ enum NotificationType {
   PAYMENT_CONFIRMATION
 }
 
+
 enum PeriodUnit {
   HOUR
   DAY
@@ -121,6 +122,7 @@ model User {
   stripeCustomerId String?
 
   addresses Address[]
+  deliveryConfig VendorDeliveryConfig?
 
   quotations Quotation[]   @relation("CustomerQuotations")
   orders     RentalOrder[] @relation("CustomerOrders")
@@ -132,10 +134,13 @@ model User {
   notifications Notification[]
   activities    ActivityLog[]
 
+  wishlistItems WishlistItem[]
+
   invoices   Invoice[]
   pickups    Pickup[]
   deliveries Delivery[]
   returns    Return[]
+  cart       Cart?
 
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
@@ -157,7 +162,9 @@ model Address {
 
   isDefault Boolean @default(false)
 
-  user User @relation(fields: [userId], references: [id])
+  user                User         @relation(fields: [userId], references: [id])
+  deliveryQuotations  Quotation[]  @relation("DeliveryAddress")
+  billingQuotations   Quotation[]  @relation("BillingAddress")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -213,6 +220,7 @@ model Product {
 
   vendor   User             @relation("VendorProducts", fields: [vendorId], references: [id])
   variants ProductVariant[]
+  wishlistItems WishlistItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -236,6 +244,7 @@ model ProductVariant {
 
   quotationItems QuotationItem[]
   orderItems     OrderItem[]
+  cartItems      CartItem[]
 }
 
 model VariantAttributeValue {
@@ -252,7 +261,7 @@ model VariantAttributeValue {
 }
 
 model RentalPeriod {
-  id       Int        @id @default(autoincrement())
+  id       Int           @id @default(autoincrement())
   name     String
   duration Int
   unit     PeriodUnit
@@ -293,19 +302,31 @@ model Coupon {
 }
 
 model Quotation {
-  id         Int             @id @default(autoincrement())
+  id         Int @id @default(autoincrement())
+
   customerId Int
   vendorId   Int
-  status     QuotationStatus @default(DRAFT)
+
+  customer User @relation("CustomerQuotations", fields: [customerId], references: [id])
+  vendor   User @relation("VendorQuotations", fields: [vendorId], references: [id])
+
+  status QuotationStatus @default(DRAFT)
 
   couponId Int?
   coupon   Coupon? @relation(fields: [couponId], references: [id])
 
-  customer User            @relation("CustomerQuotations", fields: [customerId], references: [id])
-  items    QuotationItem[]
-  order    RentalOrder?
+  deliveryAddressId Int?
+  billingAddressId  Int?
 
-  vendor    User     @relation("VendorQuotations", fields: [vendorId], references: [id])
+  fulfillmentType FulfillmentType?
+  deliveryCharge  Float? @default(0)
+
+  deliveryAddress Address? @relation("DeliveryAddress", fields: [deliveryAddressId], references: [id])
+  billingAddress  Address? @relation("BillingAddress", fields: [billingAddressId], references: [id])
+
+  items QuotationItem[]
+  order RentalOrder?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -322,6 +343,44 @@ model QuotationItem {
 
   quotation Quotation      @relation(fields: [quotationId], references: [id])
   variant   ProductVariant @relation(fields: [variantId], references: [id])
+}
+
+model WishlistItem {
+  id        Int @id @default(autoincrement())
+  userId    Int
+  productId Int
+  
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Cart {
+  id         Int       @id @default(autoincrement())
+  customerId Int       @unique
+  customer   User       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  items      CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id          Int      @id @default(autoincrement())
+  cartId      Int
+  variantId   Int
+  quantity    Int
+  rentalStart DateTime
+  rentalEnd   DateTime
+  price       Float
+
+  cart    Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, variantId, rentalStart, rentalEnd])
 }
 
 model RentalOrder {
@@ -491,4 +550,32 @@ model ActivityLog {
 
   user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model VendorDeliveryConfig {
+  id                Int @id @default(autoincrement())
+  vendorId          Int
+
+  isDeliveryEnabled Boolean @default(true)
+
+  chargeType        DeliveryChargeType
+
+  flatCharge        Float?  
+  ratePerKm         Float?   
+  freeAboveAmount   Float?  
+
+  maxDeliveryKm     Float?   
+
+  vendor            User @relation(fields: [vendorId], references: [id])
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([vendorId])
+}
+
+enum DeliveryChargeType {
+  FLAT
+  PER_KM
+  FREE
 }
