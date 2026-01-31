@@ -57,17 +57,20 @@ enum InvoiceStatus {
   DRAFT
   PARTIALLY_PAID
   PAID
+  REFUNDED
 }
 
 enum PaymentStatus {
-  PENDING
-  SUCCESS
+  REQUIRES_PAYMENT
+  SUCCEEDED
   FAILED
+  REFUNDED
 }
 
 enum PaymentFor {
   RENT
   SECURITY_DEPOSIT
+  DELIVERY_CHARGE
 }
 
 enum StockStatus {
@@ -90,13 +93,16 @@ enum NotificationType {
 model User {
   id   Int      @id @default(autoincrement())
   role UserRole
-
+  profileLogo  String?
   name     String
   email    String @unique
   password String
 
   companyName String?
+  companyLogo String?
   gstin       String?
+
+  stripeCustomerId String?
 
   addresses Address[]
 
@@ -298,11 +304,12 @@ model RentalOrder {
   status          OrderStatus     @default(CONFIRMED)
   fulfillmentType FulfillmentType
 
-  pickupAddressId   Int? // Vendor store
-  deliveryAddressId Int? // Customer address
+  pickupAddressId   Int?
+  deliveryAddressId Int?
 
-  couponCode  String?
-  discountAmt Float   @default(0)
+  deliveryCharge Float   @default(0)
+  couponCode     String?
+  discountAmt    Float   @default(0)
 
   customer  User      @relation("CustomerOrders", fields: [customerId], references: [id])
   quotation Quotation @relation(fields: [quotationId], references: [id])
@@ -369,8 +376,10 @@ model Invoice {
 
   rentalAmount    Float
   securityDeposit Float
-  totalAmount     Float
-  paidAmount      Float @default(0)
+  deliveryCharge  Float
+
+  totalAmount Float
+  paidAmount  Float @default(0)
 
   status InvoiceStatus @default(DRAFT)
 
@@ -387,8 +396,12 @@ model Payment {
 
   amount Float
   for    PaymentFor
-  method String
+
   status PaymentStatus
+
+  stripePaymentIntentId   String  @unique
+  stripeCheckoutSessionId String
+  stripeRefundId          String?
 
   invoice Invoice @relation(fields: [invoiceId], references: [id])
 
