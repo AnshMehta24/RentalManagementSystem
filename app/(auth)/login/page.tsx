@@ -50,11 +50,10 @@ export default function LoginPage() {
         throw new Error(result.error || "Invalid credentials");
       }
 
-      // Redirect based on user role
       if (result.user.role === "VENDOR") {
         router.push("/vendor/dashboard");
       } else {
-        router.push("/customer/dashboard");
+        router.push("/products");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");

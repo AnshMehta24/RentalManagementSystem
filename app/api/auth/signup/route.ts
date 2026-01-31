@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import * as z from "zod";
 import { prisma } from "@/lib/prisma";
+import stripeInstance from "@/lib/stripeInstance";
 
 const customerSignUpSchema = z
   .object({
@@ -28,7 +29,7 @@ const customerSignUpSchema = z
       .regex(/[0-9]/, "Password must contain at least one number")
       .regex(
         /[^A-Za-z0-9]/,
-        "Password must contain at least one special character"
+        "Password must contain at least one special character",
       ),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
@@ -60,7 +61,7 @@ const vendorSignUpSchema = z
       .length(15, "GSTIN must be exactly 15 characters")
       .regex(
         /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
-        "Invalid GSTIN format. Please enter a valid 15-character GSTIN"
+        "Invalid GSTIN format. Please enter a valid 15-character GSTIN",
       ),
     email: z
       .string()
@@ -74,7 +75,7 @@ const vendorSignUpSchema = z
       .regex(/[0-9]/, "Password must contain at least one number")
       .regex(
         /[^A-Za-z0-9]/,
-        "Password must contain at least one special character"
+        "Password must contain at least one special character",
       ),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
@@ -103,22 +104,25 @@ export async function POST(request: NextRequest) {
     if (existingUser) {
       return NextResponse.json(
         { error: "An account with this email address already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (validated.userType === "VENDOR") {
       const existingGstin = await prisma.user.findFirst({
-        where: { 
+        where: {
           gstin: validated.gstin.toUpperCase(),
-          role: "VENDOR"
+          role: "VENDOR",
         },
       });
 
       if (existingGstin) {
         return NextResponse.json(
-          { error: "This GSTIN is already registered. Each business must have a unique GSTIN" },
-          { status: 400 }
+          {
+            error:
+              "This GSTIN is already registered. Each business must have a unique GSTIN",
+          },
+          { status: 400 },
         );
       }
     }
@@ -131,9 +135,26 @@ export async function POST(request: NextRequest) {
         email: validated.email,
         password: hashedPassword,
         role: validated.userType,
-        companyName: validated.userType === "VENDOR" ? validated.companyName : null,
-        gstin: validated.userType === "VENDOR" ? validated.gstin.toUpperCase() : null,
-    
+        companyName:
+          validated.userType === "VENDOR" ? validated.companyName : null,
+        gstin:
+          validated.userType === "VENDOR"
+            ? validated.gstin.toUpperCase()
+            : null,
+      },
+    });
+
+    const customer = await stripeInstance.customers.create({
+      name: user.name!,
+      email: user.email!,
+    });
+
+    await prisma.user.update({
+      data: {
+        stripeCustomerId: customer.id,
+      },
+      where: {
+        id: user.id,
       },
     });
 
@@ -144,26 +165,26 @@ export async function POST(request: NextRequest) {
         userType: user.role,
         message: "Account created successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
-          error: "Validation failed", 
-          details: error.issues.map(issue => ({
-            field: issue.path.join('.'),
-            message: issue.message
-          }))
+        {
+          error: "Validation failed",
+          details: error.issues.map((issue) => ({
+            field: issue.path.join("."),
+            message: issue.message,
+          })),
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error("Signup error:", error);
     return NextResponse.json(
       { error: "Failed to create account. Please try again" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

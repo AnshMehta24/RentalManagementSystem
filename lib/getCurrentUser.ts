@@ -15,7 +15,8 @@ export async function getCurrentUser() {
     return {
       id: payload.userId as number,
       email: payload.email as string,
-      role: payload.role as "VENDOR" | "CUSTOMER" | "ADMIN",
+      role: payload.role as "CUSTOMER" | "VENDOR",
+      organizationId: payload.organizationId as string | null,
     };
   } catch {
     return null;

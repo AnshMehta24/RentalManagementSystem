@@ -53,6 +53,7 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
+
 .scroll-hidden {
   overflow: auto;
   scrollbar-width: none;
@@ -63,6 +64,10 @@ body {
   display: none;
 }
 
+
+
+
+/* Range slider styling for light theme */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
