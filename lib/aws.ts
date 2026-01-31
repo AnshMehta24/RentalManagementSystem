@@ -7,8 +7,7 @@ import {
   type PutObjectCommandInput,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { HTTPException } from "hono/http-exception";
-import type { Readable } from "stream";
+import { Readable } from "stream";
 
 const isLocal = !!process.env.S3_ENDPOINT;
 
@@ -53,7 +52,7 @@ async function getObject(filePath: string) {
   const object = await s3.send(readCommand);
 
   if (object.Body === undefined) {
-    throw new HTTPException(404, { message: "File not found" });
+    throw new Error("File not found", { cause: 404 });
   }
 
   return object;

@@ -3,99 +3,18 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { useRouter } from "next/navigation";
 import ProgressIndicator from "@/components/auth/ProgressIndicator";
 import AuthLayout from "@/components/auth/AuthLayout";
 import { Eye, EyeOff } from "lucide-react";
-
-const step1Schema = z.object({
-  userType: z.enum(["CUSTOMER", "VENDOR"], {
-    required_error: "Please select an account type to continue",
-  }),
-});
-
-const step2CustomerSchema = z
-  .object({
-    firstName: z
-      .string()
-      .min(2, "First name must be at least 2 characters")
-      .max(50, "First name must not exceed 50 characters")
-      .regex(/^[a-zA-Z\s]+$/, "First name should contain only letters"),
-    lastName: z
-      .string()
-      .min(2, "Last name must be at least 2 characters")
-      .max(50, "Last name must not exceed 50 characters")
-      .regex(/^[a-zA-Z\s]+$/, "Last name should contain only letters"),
-    email: z
-      .string()
-      .min(1, "Email address is required")
-      .email("Please enter a valid email address"),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Password must contain at least one number")
-      .regex(
-        /[^A-Za-z0-9]/,
-        "Password must contain at least one special character"
-      ),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
-const step2VendorSchema = z
-  .object({
-    firstName: z
-      .string()
-      .min(2, "First name must be at least 2 characters")
-      .max(50, "First name must not exceed 50 characters")
-      .regex(/^[a-zA-Z\s]+$/, "First name should contain only letters"),
-    lastName: z
-      .string()
-      .min(2, "Last name must be at least 2 characters")
-      .max(50, "Last name must not exceed 50 characters")
-      .regex(/^[a-zA-Z\s]+$/, "Last name should contain only letters"),
-    companyName: z
-      .string()
-      .min(2, "Company name must be at least 2 characters")
-      .max(100, "Company name must not exceed 100 characters"),
-    category: z.string().min(1, "Please select a business category"),
-    gstin: z
-      .string()
-      .length(15, "GSTIN must be exactly 15 characters")
-      .regex(
-        /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
-        "Invalid GSTIN format. Please enter a valid 15-character GSTIN"
-      ),
-    email: z
-      .string()
-      .min(1, "Email address is required")
-      .email("Please enter a valid email address"),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Password must contain at least one number")
-      .regex(
-        /[^A-Za-z0-9]/,
-        "Password must contain at least one special character"
-      ),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Passwords do not match",
-  });
-
-type Step1Data = z.infer<typeof step1Schema>;
-type Step2CustomerData = z.infer<typeof step2CustomerSchema>;
-type Step2VendorData = z.infer<typeof step2VendorSchema>;
+import {
+  Step1Data,
+  step1Schema,
+  Step2CustomerData,
+  step2CustomerSchema,
+  Step2VendorData,
+  step2VendorSchema,
+} from "@/schema/auth";
 
 const VENDOR_CATEGORIES = [
   "Electronics",
@@ -159,14 +78,14 @@ export default function SignUpPage() {
 
       if (!response.ok) {
         throw new Error(
-          result.error || "Failed to create account. Please try again"
+          result.error || "Failed to create account. Please try again",
         );
       }
 
       router.push("/login?registered=true");
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "An unexpected error occurred"
+        err instanceof Error ? err.message : "An unexpected error occurred",
       );
     } finally {
       setIsLoading(false);
@@ -204,14 +123,14 @@ export default function SignUpPage() {
           });
         }
         throw new Error(
-          result.error || "Failed to create account. Please try again"
+          result.error || "Failed to create account. Please try again",
         );
       }
 
       router.push("/login?registered=true");
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "An unexpected error occurred"
+        err instanceof Error ? err.message : "An unexpected error occurred",
       );
     } finally {
       setIsLoading(false);
@@ -230,7 +149,9 @@ export default function SignUpPage() {
       <div className="w-full max-w-md space-y-6">
         <div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            {currentStep === 1 ? "Create your account" : "Complete your profile"}
+            {currentStep === 1
+              ? "Create your account"
+              : "Complete your profile"}
           </h2>
           <p className="text-gray-600">
             {currentStep === 1 ? (
@@ -253,7 +174,9 @@ export default function SignUpPage() {
               <ProgressIndicator
                 currentStep={1}
                 totalSteps={1}
-                stepLabels={[isVendor ? "Business Details" : "Personal Details"]}
+                stepLabels={[
+                  isVendor ? "Business Details" : "Personal Details",
+                ]}
               />
             </div>
           )}
@@ -266,19 +189,22 @@ export default function SignUpPage() {
           </div>
         )}
 
-       
         {currentStep === 1 && (
-          <form onSubmit={step1Form.handleSubmit(onStep1Submit)} className="space-y-6">
+          <form
+            onSubmit={step1Form.handleSubmit(onStep1Submit)}
+            className="space-y-6"
+          >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-4">
                 Select account type
               </label>
               <div className="space-y-3">
                 <label
-                  className={`flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all ${step1Form.watch("userType") === "CUSTOMER"
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
-                    }`}
+                  className={`flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    step1Form.watch("userType") === "CUSTOMER"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
+                  }`}
                 >
                   <input
                     {...step1Form.register("userType")}
@@ -295,10 +221,11 @@ export default function SignUpPage() {
                 </label>
 
                 <label
-                  className={`flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all ${step1Form.watch("userType") === "VENDOR"
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
-                    }`}
+                  className={`flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    step1Form.watch("userType") === "VENDOR"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
+                  }`}
                 >
                   <input
                     {...step1Form.register("userType")}
@@ -330,7 +257,6 @@ export default function SignUpPage() {
           </form>
         )}
 
-       
         {currentStep === 2 && !isVendor && (
           <form
             onSubmit={step2CustomerForm.handleSubmit(onStep2CustomerSubmit)}
@@ -338,7 +264,10 @@ export default function SignUpPage() {
           >
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium text-gray-700 mb-1.5"
+                >
                   First Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -356,7 +285,10 @@ export default function SignUpPage() {
               </div>
 
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-gray-700 mb-1.5"
+                >
                   Last Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -375,7 +307,10 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1.5"
+              >
                 Email Address <span className="text-red-500">*</span>
               </label>
               <input
@@ -394,7 +329,10 @@ export default function SignUpPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-1.5"
+                >
                   Password <span className="text-red-500">*</span>
                 </label>
 
@@ -447,7 +385,11 @@ export default function SignUpPage() {
                     className="absolute right-3 top-1/2 -translate-y-1/2
                    text-gray-500 hover:text-gray-700 transition-colors"
                   >
-                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showConfirmPassword ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
                   </button>
                 </div>
 
@@ -460,7 +402,8 @@ export default function SignUpPage() {
             </div>
 
             <p className="mt-1 text-xs text-gray-500">
-              Must be 8+ characters with uppercase, lowercase, number, and special character
+              Must be 8+ characters with uppercase, lowercase, number, and
+              special character
             </p>
 
             <div className="flex gap-3 pt-2">
@@ -482,7 +425,6 @@ export default function SignUpPage() {
           </form>
         )}
 
-      
         {currentStep === 2 && isVendor && (
           <form
             onSubmit={step2VendorForm.handleSubmit(onStep2VendorSubmit)}
@@ -490,7 +432,10 @@ export default function SignUpPage() {
           >
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium text-gray-700 mb-1.5"
+                >
                   First Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -508,7 +453,10 @@ export default function SignUpPage() {
               </div>
 
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-gray-700 mb-1.5"
+                >
                   Last Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -568,7 +516,10 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label htmlFor="gstin" className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label
+                htmlFor="gstin"
+                className="block text-sm font-medium text-gray-700 mb-1.5"
+              >
                 GSTIN <span className="text-red-500">*</span>
               </label>
               <input
@@ -584,11 +535,13 @@ export default function SignUpPage() {
                   {step2VendorForm.formState.errors.gstin.message}
                 </p>
               )}
-
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1.5"
+              >
                 Email Address <span className="text-red-500">*</span>
               </label>
               <input
@@ -648,7 +601,11 @@ export default function SignUpPage() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
                   >
-                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showConfirmPassword ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
                   </button>
                 </div>
                 {step2VendorForm.formState.errors.confirmPassword && (
@@ -660,7 +617,8 @@ export default function SignUpPage() {
             </div>
 
             <p className="text-xs text-gray-500 -mt-2">
-              Password must be 8+ characters with uppercase, lowercase, number, and special character
+              Password must be 8+ characters with uppercase, lowercase, number,
+              and special character
             </p>
 
             <div className="flex gap-3 pt-2">
@@ -684,11 +642,17 @@ export default function SignUpPage() {
 
         <p className="text-center text-xs text-gray-500 pt-2">
           By signing up, you agree to our{" "}
-          <a href="/terms" className="text-blue-600 hover:text-blue-700 transition-colors">
+          <a
+            href="/terms"
+            className="text-blue-600 hover:text-blue-700 transition-colors"
+          >
             Terms of Service
           </a>{" "}
           and{" "}
-          <a href="/privacy" className="text-blue-600 hover:text-blue-700 transition-colors">
+          <a
+            href="/privacy"
+            className="text-blue-600 hover:text-blue-700 transition-colors"
+          >
             Privacy Policy
           </a>
         </p>

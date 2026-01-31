@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 
 const secret = new TextEncoder().encode(
-  process.env.JWT_SECRET || "your-secret-key-change-this-in-production"
+  process.env.JWT_SECRET!
 );
 
 if (!process.env.JWT_SECRET && process.env.NODE_ENV === "production") {
@@ -17,6 +17,7 @@ export interface AuthTokenPayload {
 
 export async function signAuthToken(payload: AuthTokenPayload): Promise<string> {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const token = await new SignJWT(payload as any)
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
