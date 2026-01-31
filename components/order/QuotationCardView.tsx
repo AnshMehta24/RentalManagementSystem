@@ -96,7 +96,7 @@ export function QuotationCardView({ quotations }: OrderCardViewProps) {
       </div>
       {cards.length === 0 && (
         <div className="text-center py-12 text-gray-500">
-          <p>No orders or quotations found</p>
+          <p>No quotations found</p>
         </div>
       )}
     </div>

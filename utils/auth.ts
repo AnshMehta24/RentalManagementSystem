@@ -11,7 +11,7 @@ if (!process.env.JWT_SECRET && process.env.NODE_ENV === "production") {
 export interface AuthTokenPayload {
   userId: number;
   email: string;
-  role: "VENDOR" | "CUSTOMER";
+  role: "ADMIN" | "VENDOR" | "CUSTOMER";
 }
 
 
