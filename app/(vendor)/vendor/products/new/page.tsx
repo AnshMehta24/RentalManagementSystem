@@ -353,43 +353,40 @@ export default function NewProductPage(): JSX.Element {
   const watchedDefaultVariant = watch("defaultVariant");
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">
-                Create Product
-              </h1>
-              <p className="text-muted-foreground mt-2">
-                Add a new product to your catalog
-              </p>
-              {vendorData && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  Vendor: {vendorData.companyName || vendorData.name}
-                  {vendorData.gstin && ` • GSTIN: ${vendorData.gstin}`}
-                </p>
-              )}
-            </div>
-            <Link
-              href="/vendor/products"
-              className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent transition-colors"
-            >
-              Cancel
-            </Link>
-          </div>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Create Product
+          </h1>
+          <p className="text-gray-600 mt-2 text-sm">
+            Add a new product to your catalog
+          </p>
+          {vendorData && (
+            <p className="text-sm text-gray-600 mt-2">
+              Vendor: {vendorData.companyName || vendorData.name}
+              {vendorData.gstin && ` • GSTIN: ${vendorData.gstin}`}
+            </p>
+          )}
         </div>
+        <Link
+          href="/vendor/products"
+          className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </Link>
+      </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-              <div className="rounded-lg border border-border bg-card p-6 shadow-sm space-y-6">
-                <div className="flex items-center gap-2">
-                  <Package className="h-5 w-5 text-muted-foreground" />
-                  <h2 className="text-xl font-semibold text-foreground">
-                    Product Information
-                  </h2>
-                </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm space-y-6">
+              <div className="flex items-center gap-2">
+                <Package className="h-5 w-5 text-gray-500" />
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Product Information
+                </h2>
+              </div>
 
                 <RHFTextInput
                   name="name"
@@ -425,16 +422,16 @@ export default function NewProductPage(): JSX.Element {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-border bg-card p-6 shadow-sm space-y-4">
+              <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm space-y-4">
                 <div className="flex items-center gap-2">
-                  <Settings className="h-5 w-5 text-muted-foreground" />
-                  <h2 className="text-xl font-semibold text-foreground">
+                  <Settings className="h-5 w-5 text-gray-500" />
+                  <h2 className="text-xl font-semibold text-gray-900">
                     Variants
                   </h2>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-sm font-medium text-foreground">
+                  <label className="text-sm font-medium text-gray-900">
                     Variant Mode *
                   </label>
                   <div className="grid grid-cols-2 gap-4">
@@ -443,12 +440,12 @@ export default function NewProductPage(): JSX.Element {
                       onClick={() => setValue("variantMode", "default")}
                       className={`p-4 rounded-lg border-2 transition-all text-left ${
                         variantMode === "default"
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50"
+                          ? "border-blue-600 bg-blue-50"
+                          : "border-gray-200 hover:border-blue-300"
                       }`}
                     >
-                      <div className="font-medium mb-1">Default Variant</div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="font-medium mb-1 text-gray-900">Default Variant</div>
+                      <div className="text-sm text-gray-600">
                         Single product with no variations
                       </div>
                     </button>
@@ -457,30 +454,30 @@ export default function NewProductPage(): JSX.Element {
                       onClick={() => setValue("variantMode", "variants")}
                       className={`p-4 rounded-lg border-2 transition-all text-left ${
                         variantMode === "variants"
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50"
+                          ? "border-blue-600 bg-blue-50"
+                          : "border-gray-200 hover:border-blue-300"
                       }`}
                     >
-                      <div className="font-medium mb-1">Multiple Variants</div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="font-medium mb-1 text-gray-900">Multiple Variants</div>
+                      <div className="text-sm text-gray-600">
                         Product with different options (Color, Size, etc.)
                       </div>
                     </button>
                   </div>
                   {errors.variantMode && (
-                    <span className="text-xs text-destructive">
+                    <span className="text-xs text-red-600">
                       {errors.variantMode.message}
                     </span>
                   )}
                 </div>
 
                 {variantMode === "variants" && (
-                  <div className="space-y-4 pt-4 border-t border-border">
+                  <div className="space-y-4 pt-4 border-t border-gray-200">
                     <div>
-                      <label className="text-sm font-medium text-foreground mb-3 block">
+                      <label className="text-sm font-medium text-gray-900 mb-3 block">
                         Select Attributes *
                       </label>
-                      <p className="text-xs text-muted-foreground mb-4">
+                      <p className="text-xs text-gray-600 mb-4">
                         Choose which attributes this product will have (e.g.,
                         Color, Size)
                       </p>
@@ -497,12 +494,12 @@ export default function NewProductPage(): JSX.Element {
                               key={attr.id}
                               className={`p-4 rounded-lg border-2 transition-all ${
                                 isSelected
-                                  ? "border-primary bg-primary/5"
-                                  : "border-border"
+                                  ? "border-blue-600 bg-blue-50"
+                                  : "border-gray-200"
                               }`}
                             >
                               <div className="flex items-center justify-between mb-3">
-                                <label className="font-medium text-foreground cursor-pointer">
+                                <label className="font-medium text-gray-900 cursor-pointer">
                                   <input
                                     type="checkbox"
                                     checked={isSelected}
@@ -511,7 +508,7 @@ export default function NewProductPage(): JSX.Element {
                                   />
                                   {attr.name}
                                 </label>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-xs text-gray-600">
                                   {attr.displayType}
                                 </span>
                               </div>
@@ -550,8 +547,8 @@ export default function NewProductPage(): JSX.Element {
                                             }
                                             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
                                               isValueSelected
-                                                ? "bg-primary text-primary-foreground"
-                                                : "bg-muted text-foreground hover:bg-muted/80"
+                                                ? "bg-blue-600 text-white"
+                                                : "bg-gray-100 text-gray-900 hover:bg-gray-200"
                                             }`}
                                           >
                                             {value.value}
@@ -566,7 +563,7 @@ export default function NewProductPage(): JSX.Element {
                                     </div>
                                   )}
                                   {selectedValues.length === 0 && (
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-xs text-gray-600">
                                       Select at least one value for {attr.name}
                                     </p>
                                   )}
@@ -577,8 +574,8 @@ export default function NewProductPage(): JSX.Element {
                         })}
 
                         {attributes.length === 0 && (
-                          <div className="p-4 rounded-lg border border-border bg-muted/50 text-center">
-                            <p className="text-sm text-muted-foreground">
+                          <div className="p-4 rounded-lg border border-gray-200 bg-gray-50 text-center">
+                            <p className="text-sm text-gray-600">
                               No attributes available. Contact admin to add
                               attributes.
                             </p>
@@ -591,10 +588,10 @@ export default function NewProductPage(): JSX.Element {
               </div>
 
               {variantMode === "variants" && watchedVariants.length > 0 && (
-                <div className="rounded-lg border border-border bg-card p-6 shadow-sm space-y-4">
+                <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <h2 className="text-xl font-semibold text-foreground">
+                      <h2 className="text-xl font-semibold text-gray-900">
                         ₹ Variants ({watchedVariants.length})
                       </h2>
                     </div>
@@ -609,16 +606,16 @@ export default function NewProductPage(): JSX.Element {
                           key={index}
                           className={`p-4 rounded-lg border ${
                             variantErrors
-                              ? "border-destructive/50"
-                              : "border-border"
-                          } bg-background hover:border-primary/50 transition-colors`}
+                              ? "border-red-300"
+                              : "border-gray-200"
+                          } bg-gray-50 hover:border-blue-300 transition-colors`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
-                              <div className="font-medium text-foreground">
+                              <div className="font-medium text-gray-900">
                                 {label}
                               </div>
-                              <div className="text-sm text-muted-foreground mt-1">
+                              <div className="text-sm text-gray-600 mt-1">
                                 Qty: {variant.quantity || 0} • Cost: ₹
                                 {variant.costPrice || 0} • Sale: ₹
                                 {variant.salePrice || 0}
@@ -626,7 +623,7 @@ export default function NewProductPage(): JSX.Element {
                               {variantErrors && (
                                 <div className="mt-2 space-y-1">
                                   {variantErrors.quantity?.root?.message && (
-                                    <p className="text-xs text-destructive">
+                                    <p className="text-xs text-red-600">
                                       {
                                         variantErrors.quantity.root
                                           .message as string
@@ -634,7 +631,7 @@ export default function NewProductPage(): JSX.Element {
                                     </p>
                                   )}
                                   {variantErrors.costPrice?.root?.message && (
-                                    <p className="text-xs text-destructive">
+                                    <p className="text-xs text-red-600">
                                       {
                                         variantErrors.costPrice.root
                                           .message as string
@@ -642,7 +639,7 @@ export default function NewProductPage(): JSX.Element {
                                     </p>
                                   )}
                                   {variantErrors.salePrice?.root?.message && (
-                                    <p className="text-xs text-destructive">
+                                    <p className="text-xs text-red-600">
                                       {
                                         variantErrors.salePrice.root
                                           .message as string
@@ -651,7 +648,7 @@ export default function NewProductPage(): JSX.Element {
                                   )}
                                   {variantErrors.rentalPrices?.root
                                     ?.message && (
-                                    <p className="text-xs text-destructive">
+                                    <p className="text-xs text-red-600">
                                       {
                                         variantErrors.rentalPrices.root
                                           .message as string
@@ -673,7 +670,7 @@ export default function NewProductPage(): JSX.Element {
                             <button
                               type="button"
                               onClick={() => openVariantConfig(variant, index)}
-                              className="px-4 py-2 rounded-md border border-input bg-background text-sm font-medium hover:bg-accent transition-colors ml-4"
+                              className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors ml-4"
                             >
                               Configure
                             </button>
@@ -684,9 +681,9 @@ export default function NewProductPage(): JSX.Element {
                   </div>
 
                   {errors.variants && (
-                    <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 flex items-start gap-2">
-                      <AlertCircle className="h-4 w-4 text-destructive mt-0.5" />
-                      <span className="text-xs text-destructive font-medium">
+                    <div className="rounded-lg border border-red-200 bg-red-50 p-3 flex items-start gap-2">
+                      <AlertCircle className="h-4 w-4 text-red-600 mt-0.5" />
+                      <span className="text-xs text-red-700 font-medium">
                         {errors.variants.message as string}
                       </span>
                     </div>
@@ -696,11 +693,11 @@ export default function NewProductPage(): JSX.Element {
 
               {/* Default Variant Display */}
               {variantMode === "default" && (
-                <div className="rounded-lg border border-border bg-card p-6 shadow-sm space-y-4">
+                <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <IndianRupeeIcon className="h-5 w-5 text-muted-foreground" />
-                      <h2 className="text-xl font-semibold text-foreground">
+                      <IndianRupeeIcon className="h-5 w-5 text-gray-500" />
+                      <h2 className="text-xl font-semibold text-gray-900">
                         Pricing & Inventory
                       </h2>
                     </div>
@@ -709,16 +706,16 @@ export default function NewProductPage(): JSX.Element {
                   <div
                     className={`p-4 rounded-lg border ${
                       errors.defaultVariant
-                        ? "border-destructive/50"
-                        : "border-border"
-                    } bg-background`}
+                        ? "border-red-300"
+                        : "border-gray-200"
+                    } bg-gray-50`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="font-medium text-foreground">
+                        <div className="font-medium text-gray-900">
                           Default Variant
                         </div>
-                        <div className="text-sm text-muted-foreground mt-1">
+                        <div className="text-sm text-gray-600 mt-1">
                           Qty: {watchedDefaultVariant?.quantity || 0} • Cost: ₹
                           {watchedDefaultVariant?.costPrice || 0} • Sale: ₹
                           {watchedDefaultVariant?.salePrice || 0}
@@ -726,7 +723,7 @@ export default function NewProductPage(): JSX.Element {
                         {errors.defaultVariant && (
                           <div className="mt-2 space-y-1">
                             {errors.defaultVariant.quantity && (
-                              <p className="text-xs text-destructive">
+                              <p className="text-xs text-red-600">
                                 {
                                   errors.defaultVariant.quantity
                                     .message as string
@@ -734,7 +731,7 @@ export default function NewProductPage(): JSX.Element {
                               </p>
                             )}
                             {errors.defaultVariant.costPrice && (
-                              <p className="text-xs text-destructive">
+                              <p className="text-xs text-red-600">
                                 {
                                   errors.defaultVariant.costPrice
                                     .message as string
@@ -742,7 +739,7 @@ export default function NewProductPage(): JSX.Element {
                               </p>
                             )}
                             {errors.defaultVariant.salePrice && (
-                              <p className="text-xs text-destructive">
+                              <p className="text-xs text-red-600">
                                 {
                                   errors.defaultVariant.salePrice
                                     .message as string
@@ -750,7 +747,7 @@ export default function NewProductPage(): JSX.Element {
                               </p>
                             )}
                             {errors.defaultVariant.rentalPrices && (
-                              <p className="text-xs text-destructive">
+                              <p className="text-xs text-red-600">
                                 {
                                   errors.defaultVariant.rentalPrices
                                     .message as string
@@ -759,7 +756,7 @@ export default function NewProductPage(): JSX.Element {
                             )}
                             {typeof errors.defaultVariant.message ===
                               "string" && (
-                              <p className="text-xs text-destructive">
+                              <p className="text-xs text-red-600">
                                 {errors.defaultVariant.message}
                               </p>
                             )}
@@ -769,7 +766,7 @@ export default function NewProductPage(): JSX.Element {
                       <button
                         type="button"
                         onClick={openDefaultVariantConfig}
-                        className="px-4 py-2 rounded-md border border-input bg-background text-sm font-medium hover:bg-accent transition-colors ml-4"
+                        className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors ml-4"
                       >
                         Configure
                       </button>
@@ -781,30 +778,30 @@ export default function NewProductPage(): JSX.Element {
 
             <div className="lg:col-span-1">
               <div className="sticky top-6 space-y-6">
-                <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-                  <h3 className="font-semibold text-foreground mb-4">
+                <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                  <h3 className="font-semibold text-gray-900 mb-4">
                     Product Status
                   </h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Published</span>
+                      <span className="text-gray-600">Published</span>
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium ${
                           watch("published")
-                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-gray-100 text-gray-800"
                         }`}
                       >
                         {watch("published") ? "Yes" : "No"}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Rentable</span>
+                      <span className="text-gray-600">Rentable</span>
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium ${
                           watch("isRentable")
-                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-gray-100 text-gray-800"
                         }`}
                       >
                         {watch("isRentable") ? "Yes" : "No"}
@@ -817,13 +814,13 @@ export default function NewProductPage(): JSX.Element {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                    className="w-full rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
                     {loading ? "Creating..." : "Create Product"}
                   </button>
                   <Link
                     href="/vendor/products"
-                    className="w-full text-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium text-foreground hover:bg-accent transition-colors"
+                    className="w-full text-center rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     Cancel
                   </Link>
@@ -832,7 +829,6 @@ export default function NewProductPage(): JSX.Element {
             </div>
           </div>
         </form>
-      </div>
 
       <VariantConfigModal
         isOpen={variantConfigModal.isOpen}

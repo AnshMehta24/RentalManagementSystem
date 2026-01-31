@@ -102,6 +102,7 @@ export async function getOrdersByStatus(
   return orders.filter((order) => order.status === status);
 }
 
+/** Quotations for the board: DRAFT, SENT, or CONFIRMED without an order yet */
 export async function getConfirmedQuotationsWithoutOrders() {
   try {
     const currentUser = await getCurrentUser();
@@ -115,8 +116,11 @@ export async function getConfirmedQuotationsWithoutOrders() {
     const quotations = await prisma.quotation.findMany({
       where: {
         vendorId: vendorId,
-        status: "CONFIRMED" as QuotationStatus,
-        order: null,
+        OR: [
+          { status: "DRAFT" as QuotationStatus },
+          { status: "SENT" as QuotationStatus },
+          { status: "CONFIRMED" as QuotationStatus, order: null },
+        ],
       },
       include: {
         customer: {

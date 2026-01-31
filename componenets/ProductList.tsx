@@ -49,7 +49,7 @@ export default function ProductsClient({
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedDuration, setSelectedDuration] = useState("All Duration");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -284,9 +284,9 @@ export default function ProductsClient({
                   <ChevronLeft className="h-4 w-4 mx-auto" />
                 </button>
 
-                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                {Array.from({ length: Math.min(totalPages, 9) }, (_, i) => {
                   const page =
-                    totalPages <= 5
+                    totalPages <= 50
                       ? i + 1
                       : currentPage <= 3
                         ? i + 1
