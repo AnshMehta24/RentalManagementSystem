@@ -6,8 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthLayout from "@/components/auth/AuthLayout";
-import { Eye, EyeOff } from "lucide-react";
-
+import { Eye, EyeOff, Shield } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -16,14 +15,13 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+export default function SuperAdminLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || undefined;
+  const redirect = searchParams.get("redirect") || "/super-admin";
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-
 
   const {
     register,
@@ -40,9 +38,7 @@ export default function LoginPage() {
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
@@ -52,14 +48,13 @@ export default function LoginPage() {
         throw new Error(result.error || "Invalid credentials");
       }
 
-      // Redirect based on user role (or redirect param)
-      if (result.user.role === "ADMIN") {
-        router.push(redirect || "/super-admin");
-      } else if (result.user.role === "VENDOR") {
-        router.push(redirect || "/vendor/dashboard");
-      } else {
-        router.push("/products");
+      if (result.user.role !== "ADMIN") {
+        setError("Admin access only. This login is for Super Admin. Use the main login for vendors or customers.");
+        setIsLoading(false);
+        return;
       }
+
+      router.push(redirect);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -70,14 +65,14 @@ export default function LoginPage() {
   return (
     <AuthLayout>
       <div className="w-full max-w-md">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign in to your account</h2>
-          <p className="text-gray-600">
-            Don't have an account?{" "}
-            <a href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
-              Create one
-            </a>
-          </p>
+        <div className="mb-8 flex items-center gap-3">
+          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+            <Shield className="w-6 h-6 text-blue-600" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-1">Super Admin</h2>
+            <p className="text-gray-600 text-sm">Sign in with an admin account</p>
+          </div>
         </div>
 
         {error && (
@@ -96,7 +91,7 @@ export default function LoginPage() {
               type="email"
               id="email"
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              placeholder="john@example.com"
+              placeholder="admin@rentalmanagement.com"
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
@@ -104,14 +99,9 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <a href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
-                Forgot password?
-              </a>
-            </div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
             <div className="relative">
               <input
                 {...register("password")}
@@ -120,7 +110,6 @@ export default function LoginPage() {
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg pr-10 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                 placeholder="••••••••"
               />
-
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -129,21 +118,9 @@ export default function LoginPage() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-
             {errors.password && (
               <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
             )}
-          </div>
-
-          <div className="flex items-center">
-            <input
-              id="remember"
-              type="checkbox"
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-            />
-            <label htmlFor="remember" className="ml-2 text-sm text-gray-700">
-              Remember me
-            </label>
           </div>
 
           <button
@@ -155,14 +132,10 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-gray-500">
-          By signing in, you agree to our{" "}
-          <a href="/terms" className="text-blue-600 hover:text-blue-700">
-            Terms of Service
-          </a>{" "}
-          and{" "}
-          <a href="/privacy" className="text-blue-600 hover:text-blue-700">
-            Privacy Policy
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Not an admin?{" "}
+          <a href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+            Go to main login
           </a>
         </p>
       </div>

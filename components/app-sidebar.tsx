@@ -26,7 +26,7 @@ const navGroups: NavGroup[] = [
     label: "Manage",
     items: [
       { title: "Products", url: "/vendor/products", icon: Package },
-      { title: "Inventory", url: "/vendor/inventory", icon: Package },
+      // { title: "Inventory", url: "/vendor/inventory", icon: Package },
       { title: "Rental Orders", url: "/vendor/orders", icon: ShoppingCart },
       { title: "Invoices", url: "/vendor/invoices", icon: FileText },
       { title: "Reports", url: "/vendor/reports", icon: BarChart3 },
