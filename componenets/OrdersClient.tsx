@@ -88,11 +88,8 @@ export default function OrdersClient({
           ) : (
             <ul className="space-y-4">
               {quotations.map((q) => (
-                <li
-                  key={q.id}
-                  className="rounded-lg border border-gray-200 bg-white overflow-hidden hover:border-blue-500/50 transition shadow-sm"
-                >
-                  <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <li key={q.id} className="rounded-lg border border-gray-200 bg-white overflow-hidden hover:border-blue-500/50 transition shadow-sm">
+                  <Link href={`/quotations/${q.id}`} className="block p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
                         <span className="font-semibold text-gray-900">
@@ -121,7 +118,7 @@ export default function OrdersClient({
                         {formatDate(q.createdAt)}
                       </span>
                     </div>
-                  </div>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -151,11 +148,8 @@ export default function OrdersClient({
           ) : (
             <ul className="space-y-4">
               {orders.map((o) => (
-                <li
-                  key={o.id}
-                  className="rounded-lg border border-gray-200 bg-white overflow-hidden hover:border-blue-500/50 transition shadow-sm"
-                >
-                  <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <li key={o.id} className="rounded-lg border border-gray-200 bg-white overflow-hidden hover:border-blue-500/50 transition shadow-sm">
+                  <Link href={`/orders/${o.id}`} className="block p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
                         <span className="font-semibold text-gray-900">
@@ -185,7 +179,7 @@ export default function OrdersClient({
                         {formatDate(o.createdAt)}
                       </span>
                     </div>
-                  </div>
+                  </Link>
                 </li>
               ))}
             </ul>

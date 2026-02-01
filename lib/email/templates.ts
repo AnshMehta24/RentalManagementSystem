@@ -34,6 +34,10 @@ function emailWrapper(innerContent: string, preheader?: string) {
     .footer p { margin: 0; font-size: 12px; color: #9ca3af; }
     .footer a { color: #6b7280; text-decoration: none; }
     .link-fallback { word-break: break-all; font-size: 13px; color: #6b7280; margin-top: 12px; }
+    .info-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px 20px; margin: 20px 0; }
+    .info-box p { margin: 0 0 8px; font-size: 15px; }
+    .info-box p:last-child { margin-bottom: 0; }
+    .highlight { color: #1d4ed8; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -56,6 +60,58 @@ function emailWrapper(innerContent: string, preheader?: string) {
 `;
 }
 
+export function getOrderPlacedVendorTemplate(params: {
+  vendorName: string;
+  orderId: number;
+  customerName: string;
+  orderViewUrl: string;
+}) {
+  const { vendorName, orderId, customerName, orderViewUrl } = params;
+  const orderRef = `#${String(orderId).padStart(6, "0")}`;
+  const innerContent = `
+    <p>Hi ${vendorName},</p>
+    <p>A new order has been placed and payment has been confirmed.</p>
+    <div class="info-box">
+      <p><strong>Order ${orderRef}</strong></p>
+      <p>Customer: <span class="highlight">${customerName}</span></p>
+    </div>
+    <p>Please process the order and update status from your vendor dashboard when ready.</p>
+    <p style="text-align: center;">
+      <a href="${orderViewUrl}" class="btn">View order</a>
+    </p>
+    <div class="divider"></div>
+    <p class="muted">Or copy this link: <a href="${orderViewUrl}" class="link-fallback">${orderViewUrl}</a></p>
+  `;
+  return emailWrapper(innerContent, `New order ${orderRef} – ${customerName}`);
+}
+
+export function getOrderStatusUpdateCustomerTemplate(params: {
+  customerName: string;
+  orderId: number;
+  status: string;
+  orderViewUrl: string;
+  message?: string;
+}) {
+  const { customerName, orderId, status, orderViewUrl, message } = params;
+  const orderRef = `#${String(orderId).padStart(6, "0")}`;
+  const statusLabel = status.replace("_", " ").toLowerCase();
+  const innerContent = `
+    <p>Hi ${customerName},</p>
+    <p>Your order ${orderRef} has been updated.</p>
+    <div class="info-box">
+      <p><strong>New status</strong>: <span class="highlight">${statusLabel}</span></p>
+      ${message ? `<p>${message}</p>` : ""}
+    </div>
+    <p>You can view your order details anytime from your account.</p>
+    <p style="text-align: center;">
+      <a href="${orderViewUrl}" class="btn btn-success">View order</a>
+    </p>
+    <div class="divider"></div>
+    <p class="muted">Or copy this link: <a href="${orderViewUrl}" class="link-fallback">${orderViewUrl}</a></p>
+  `;
+  return emailWrapper(innerContent, `Order ${orderRef} – ${statusLabel}`);
+}
+
 export function getPaymentLinkTemplate(params: {
   customerName: string;
   vendorName: string;
@@ -65,23 +121,14 @@ export function getPaymentLinkTemplate(params: {
   const { customerName, vendorName, quotationRef, paymentUrl } = params;
   const innerContent = `
     <p>Hi ${customerName},</p>
-    <p>
-      <strong>${vendorName}</strong> has sent you a secure payment link for Quotation ${quotationRef}.
-    </p>
-    <p>
-      Click the button below to complete your payment safely through our payment partner:
-    </p>
+    <p><strong>${vendorName}</strong> has sent you a secure payment link for Quotation ${quotationRef}.</p>
+    <p>Click the button below to complete your payment safely.</p>
     <p style="text-align: center;">
-      <a href="${paymentUrl}" class="btn btn-success">Pay Now</a>
+      <a href="${paymentUrl}" class="btn btn-success">Pay now</a>
     </p>
     <div class="divider"></div>
-    <p class="muted">
-      Or copy and paste this link into your browser:<br>
-      <a href="${paymentUrl}" class="link-fallback">${paymentUrl}</a>
-    </p>
-    <p class="muted" style="margin-top: 24px;">
-      If you did not request this payment link or have any questions, please contact the vendor directly. Do not share this link with anyone.
-    </p>
+    <p class="muted">Or copy this link: <a href="${paymentUrl}" class="link-fallback">${paymentUrl}</a></p>
+    <p class="muted" style="margin-top: 24px;">If you did not request this, please contact the vendor. Do not share this link.</p>
   `;
   return emailWrapper(innerContent, `Complete your payment for Quotation ${quotationRef}`);
 }
