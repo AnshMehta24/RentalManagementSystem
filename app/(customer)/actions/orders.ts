@@ -103,3 +103,189 @@ export async function getCustomerOrders(): Promise<OrderListItem[]> {
     };
   });
 }
+
+export type QuotationDetail = {
+  id: number;
+  status: string;
+  fulfillmentType: string | null;
+  deliveryCharge: number | null;
+  discountAmt: number;
+  couponCode: string | null;
+  createdAt: Date;
+  vendorName: string;
+  vendorCompanyName: string | null;
+  items: {
+    id: number;
+    quantity: number;
+    rentalStart: Date;
+    rentalEnd: Date;
+    price: number;
+    productName: string;
+    variantAttributes: { name: string; value: string }[];
+  }[];
+  subtotal: number;
+  totalAmount: number;
+  rentalStart: Date | null;
+  rentalEnd: Date | null;
+};
+
+export async function getCustomerQuotationById(
+  quotationId: number,
+): Promise<QuotationDetail | null> {
+  const customerId = await getCustomerId();
+  const q = await prisma.quotation.findFirst({
+    where: { id: quotationId, customerId },
+    include: {
+      vendor: { select: { name: true, companyName: true } },
+      coupon: true,
+      items: {
+        include: {
+          variant: {
+            include: {
+              product: { select: { name: true } },
+              attributes: {
+                include: {
+                  attribute: { select: { name: true } },
+                  value: { select: { value: true } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!q) return null;
+  const subtotal = q.items.reduce((s, i) => s + i.price * i.quantity, 0);
+  let discountAmt = 0;
+  const couponCode = q.coupon?.code ?? null;
+  if (q.coupon) {
+    if (q.coupon.type === "FLAT") {
+      discountAmt = Math.min(q.coupon.value, subtotal);
+    } else {
+      const pct = (subtotal * q.coupon.value) / 100;
+      discountAmt = q.coupon.maxDiscount != null ? Math.min(pct, q.coupon.maxDiscount) : pct;
+    }
+  }
+  const deliveryCharge = q.deliveryCharge ?? 0;
+  const totalAmount = subtotal - discountAmt + deliveryCharge;
+  const rentalStarts = q.items.map((i) => i.rentalStart.getTime());
+  const rentalEnds = q.items.map((i) => i.rentalEnd.getTime());
+  return {
+    id: q.id,
+    status: q.status,
+    fulfillmentType: q.fulfillmentType,
+    deliveryCharge: q.deliveryCharge,
+    discountAmt,
+    couponCode,
+    createdAt: q.createdAt,
+    vendorName: q.vendor.name,
+    vendorCompanyName: q.vendor.companyName,
+    items: q.items.map((item) => ({
+      id: item.id,
+      quantity: item.quantity,
+      rentalStart: item.rentalStart,
+      rentalEnd: item.rentalEnd,
+      price: item.price,
+      productName: item.variant.product.name,
+      variantAttributes: item.variant.attributes.map((a) => ({
+        name: a.attribute.name,
+        value: a.value.value,
+      })),
+    })),
+    subtotal,
+    totalAmount,
+    rentalStart: rentalStarts.length ? new Date(Math.min(...rentalStarts)) : null,
+    rentalEnd: rentalEnds.length ? new Date(Math.max(...rentalEnds)) : null,
+  };
+}
+
+export type OrderDetail = {
+  id: number;
+  quotationId: number;
+  status: string;
+  fulfillmentType: string;
+  deliveryCharge: number;
+  discountAmt: number;
+  couponCode: string | null;
+  createdAt: Date;
+  vendorName: string;
+  vendorCompanyName: string | null;
+  items: {
+    id: number;
+    quantity: number;
+    rentalStart: Date;
+    rentalEnd: Date;
+    price: number;
+    productName: string;
+    variantAttributes: { name: string; value: string }[];
+  }[];
+  subtotal: number;
+  totalAmount: number;
+  rentalStart: Date | null;
+  rentalEnd: Date | null;
+};
+
+export async function getCustomerOrderById(orderId: number): Promise<OrderDetail | null> {
+  const customerId = await getCustomerId();
+  const order = await prisma.rentalOrder.findFirst({
+    where: { id: orderId, customerId },
+    include: {
+      quotation: {
+        include: {
+          vendor: { select: { name: true, companyName: true } },
+        },
+      },
+      items: {
+        include: {
+          variant: {
+            include: {
+              product: { select: { name: true } },
+              attributes: {
+                include: {
+                  attribute: { select: { name: true } },
+                  value: { select: { value: true } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!order) return null;
+  const subtotal = order.items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const discountAmt = order.discountAmt ?? 0;
+  const deliveryCharge = order.deliveryCharge ?? 0;
+  const totalAmount = subtotal - discountAmt + deliveryCharge;
+  const rentalStarts = order.items.map((i) => i.rentalStart.getTime());
+  const rentalEnds = order.items.map((i) => i.rentalEnd.getTime());
+  return {
+    id: order.id,
+    quotationId: order.quotationId,
+    status: order.status,
+    fulfillmentType: order.fulfillmentType,
+    deliveryCharge,
+    discountAmt,
+    couponCode: order.couponCode,
+    createdAt: order.createdAt,
+    vendorName: order.quotation.vendor.name,
+    vendorCompanyName: order.quotation.vendor.companyName,
+    items: order.items.map((item) => ({
+      id: item.id,
+      quantity: item.quantity,
+      rentalStart: item.rentalStart,
+      rentalEnd: item.rentalEnd,
+      price: item.price,
+      productName: item.variant.product.name,
+      variantAttributes: item.variant.attributes.map((a) => ({
+        name: a.attribute.name,
+        value: a.value.value,
+      })),
+    })),
+    subtotal,
+    totalAmount,
+    rentalStart: rentalStarts.length ? new Date(Math.min(...rentalStarts)) : null,
+    rentalEnd: rentalEnds.length ? new Date(Math.max(...rentalEnds)) : null,
+  };
+}

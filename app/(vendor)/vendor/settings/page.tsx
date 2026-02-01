@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getVendorProfile, getVendorDeliveryConfig } from "./action";
 import RedirectToLogin from "./RedirectToLogin";
 import DeliveryConfigForm from "./DeliveryConfigForm";
+import ProfileImageUpload from "./ProfileImageUpload";
 import { User, Mail, Calendar, Building2, FileText, LogOut, Truck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -36,17 +37,7 @@ export default async function VendorSettingsPage() {
           <h2 className="text-lg font-semibold text-gray-900">Profile</h2>
         </div>
         <div className="p-6 flex flex-col sm:flex-row items-start gap-6">
-          <div className="shrink-0 w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-gray-200">
-            {profile.profileLogo ? (
-              <img
-                src={profile.profileLogo}
-                alt=""
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <User className="w-10 h-10 text-gray-400" />
-            )}
-          </div>
+          <ProfileImageUpload currentImageUrl={profile.profileLogo} />
           <div className="flex-1 min-w-0 space-y-4">
             <div>
               <h3 className="text-xl font-semibold text-gray-900">{profile.name}</h3>

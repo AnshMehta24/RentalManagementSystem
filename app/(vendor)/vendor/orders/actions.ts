@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/getCurrentUser";
+import { sendOrderStatusUpdateToCustomer } from "@/lib/email/sendOrderNotifications";
 import type { OrderBoardData } from "@/types/order";
 import type { OrderStatus, QuotationStatus } from "@/generated/prisma/enums";
 import type { Prisma } from "@/generated/prisma/client";
@@ -385,6 +386,24 @@ export async function recordReturn(
       data: { status: "COMPLETED" as OrderStatus },
     }),
   ]);
+
+  const customer = await prisma.user.findUnique({
+    where: { id: order.customerId },
+    select: { email: true, name: true },
+  });
+  if (customer?.email) {
+    try {
+      await sendOrderStatusUpdateToCustomer({
+        to: customer.email,
+        customerName: customer.name,
+        orderId: order.id,
+        status: "COMPLETED",
+        message: "Your items have been returned and the order is now complete. Thank you for your business.",
+      });
+    } catch (e) {
+      console.error("Failed to send order status email to customer:", e);
+    }
+  }
 
   const updated = await getOrderByIdForVendor(orderId);
   if (!updated) throw new Error("Order not found after recording return");

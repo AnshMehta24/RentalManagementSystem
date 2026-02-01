@@ -3,6 +3,11 @@
 import { getCurrentUser } from "@/lib/getCurrentUser";
 import { prisma } from "@/lib/prisma";
 import type { DeliveryChargeType } from "@/generated/prisma/enums";
+import s3Service from "@/lib/aws";
+import { revalidatePath } from "next/cache";
+
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB for profile
 
 export type VendorProfile = {
   id: number;
@@ -121,6 +126,53 @@ export async function updateVendorDeliveryConfig(
     return {
       success: false,
       error: e instanceof Error ? e.message : "Failed to update delivery config",
+    };
+  }
+}
+
+export async function uploadVendorProfileImage(
+  formData: FormData
+): Promise<{ success: boolean; url?: string; error?: string }> {
+  try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "VENDOR") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const file = formData.get("image") as File | null;
+    if (!file || !(file instanceof File) || file.size === 0) {
+      return { success: false, error: "No image file provided" };
+    }
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      return {
+        success: false,
+        error: "Invalid file type. Use JPEG, PNG, WebP or GIF.",
+      };
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      return { success: false, error: "Image must be 2MB or smaller." };
+    }
+
+    const vendorId = typeof user.id === "number" ? user.id : parseInt(String(user.id), 10);
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const key = `profile/vendor/${vendorId}/${Date.now()}-avatar.${ext}`;
+
+    await s3Service.save(file, key);
+    const publicUrl = s3Service.getPublicUrl(key);
+
+    await prisma.user.update({
+      where: { id: vendorId, role: "VENDOR" },
+      data: { profileLogo: publicUrl },
+    });
+
+    revalidatePath("/vendor/settings");
+    return { success: true, url: publicUrl };
+  } catch (e) {
+    console.error("uploadVendorProfileImage error:", e);
+    return {
+      success: false,
+      error: e instanceof Error ? e.message : "Failed to upload profile image",
     };
   }
 }
