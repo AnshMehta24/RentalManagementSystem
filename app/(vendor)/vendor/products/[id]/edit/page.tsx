@@ -15,6 +15,8 @@ export default async function EditProductPage({ params }: PageProps) {
   const { id } = await params;
   const productId = Number(id);
 
+  
+
   if (!Number.isInteger(productId) || productId <= 0) {
     notFound();
   }

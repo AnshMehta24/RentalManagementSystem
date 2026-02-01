@@ -27,6 +27,7 @@ export default function ProfileImageUpload({ currentImageUrl }: ProfileImageUplo
       const formData = new FormData();
       formData.set("image", file);
       const result = await uploadVendorProfileImage(formData);
+      console.log(result);
       if (result.success && result.url) {
         setPreviewUrl(result.url);
         router.refresh();

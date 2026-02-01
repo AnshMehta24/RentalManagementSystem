@@ -26,6 +26,7 @@ import {
 import Link from "next/link";
 import { ColorPicker, VariantConfigModal } from "@/components/product";
 import type { AttributeDisplayType } from "@/generated/prisma/enums";
+import Image from "next/image";
 
 type Attribute = {
   id: number;
@@ -422,7 +423,9 @@ export default function NewProductPage(): JSX.Element {
                   <div className="relative w-40 h-40 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden">
                     {watch("imageUrl") ? (
                       <>
-                        <img
+                        <Image
+                          height={100}
+                          width={100}
                           src={watch("imageUrl")}
                           alt="Product"
                           className="w-full h-full object-cover"

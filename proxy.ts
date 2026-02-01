@@ -87,11 +87,11 @@ export async function proxy(request: NextRequest) {
   }
 
   if (pathname.startsWith("/vendor") && role !== "VENDOR") {
-    return NextResponse.redirect(new URL("/unauthorized", request.url));
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   if (pathname.startsWith("/customer") && role !== "CUSTOMER") {
-    return NextResponse.redirect(new URL("/unauthorized", request.url));
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   return NextResponse.next();

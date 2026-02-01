@@ -159,11 +159,11 @@ export async function uploadVendorProfileImage(
     const key = `profile/vendor/${vendorId}/${Date.now()}-avatar.${ext}`;
 
     await s3Service.save(file, key);
-    const publicUrl = s3Service.getPublicUrl(key);
+    const publicUrl = await s3Service.saveAndGetPreviewUrl(file, key);
 
     await prisma.user.update({
       where: { id: vendorId, role: "VENDOR" },
-      data: { profileLogo: publicUrl },
+      data: { profileLogo: publicUrl, companyLogo: publicUrl },
     });
 
     revalidatePath("/vendor/settings");
