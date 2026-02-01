@@ -147,20 +147,20 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       <Header showSearch />
 
       <div className="container mx-auto px-4 py-6 md:py-8">
-        <nav className="mb-6 text-sm text-(--foreground)/70">
-          <Link href="/products" className="hover:text-(--accent) transition">
+        <nav className="mb-6 text-sm text-gray-600">
+          <Link href="/products" className="hover:text-blue-600 transition">
             All Product
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-foreground">{product.name}</span>
+          <span className="text-gray-900">{product.name}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          <div className="relative aspect-square lg:aspect-4/3 rounded-lg border border-(--border) bg-(--card-bg) overflow-hidden">
+          <div className="relative aspect-square lg:aspect-4/3 rounded-lg border border-gray-200 bg-white overflow-hidden shadow-sm">
             <Image
               src={product.image}
               alt={product.name}
@@ -179,13 +179,13 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           </div>
 
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               {product.name}
             </h1>
-            <p className="text-sm text-(--foreground)/60 mb-3">
+            <p className="text-sm text-gray-500 mb-3">
               {currentSku ? `R00/${currentSku}` : "—"}
             </p>
-            <p className="text-sm text-(--foreground)/80 mb-4">
+            <p className="text-sm text-gray-600 mb-4">
               (Price for the product / per hour / per day / per night / per
               week)
             </p>
@@ -195,7 +195,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <div className="space-y-4 mb-6">
                 {product.attributeOptions.map((attr) => (
                   <div key={attr.id}>
-                    <h3 className="text-sm font-semibold text-foreground mb-2">
+                    <h3 className="text-sm font-semibold text-gray-900 mb-2">
                       {attr.name}
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -217,8 +217,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                               onClick={() => setAttributeValue(attr.id, val.id)}
                               className={`w-9 h-9 rounded-full border-2 shrink-0 transition ${
                                 isSelected
-                                  ? "border-(--accent) ring-2 ring-(--accent)/30"
-                                  : "border-(--border) hover:border-(--foreground)/50"
+                                  ? "border-blue-600 ring-2 ring-blue-600/30"
+                                  : "border-gray-200 hover:border-gray-400"
                               }`}
                               style={{ backgroundColor: hex }}
                               title={val.value}
@@ -233,8 +233,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                               key={val.id}
                               className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition ${
                                 isSelected
-                                  ? "border-(--accent) bg-(--accent)/10 text-(--accent)"
-                                  : "border-(--border) hover:bg-(--card-bg)"
+                                  ? "border-blue-600 bg-blue-50 text-blue-600"
+                                  : "border-gray-200 hover:bg-gray-50"
                               }`}
                             >
                               <input
@@ -249,7 +249,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                               <span className="text-sm font-medium">
                                 {val.value}
                                 {val.extraPrice > 0 && (
-                                  <span className="text-(--foreground)/60 ml-1">
+                                  <span className="text-gray-500 ml-1">
                                     (+Rs.{val.extraPrice})
                                   </span>
                                 )}
@@ -264,8 +264,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                               key={val.id}
                               className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition ${
                                 isSelected
-                                  ? "border-(--accent) bg-(--accent)/10 text-(--accent)"
-                                  : "border-(--border) hover:bg-(--card-bg)"
+                                  ? "border-blue-600 bg-blue-50 text-blue-600"
+                                  : "border-gray-200 hover:bg-gray-50"
                               }`}
                             >
                               <input
@@ -280,7 +280,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                               <span className="text-sm font-medium">
                                 {val.value}
                                 {val.extraPrice > 0 && (
-                                  <span className="text-[var(--foreground)]/60 ml-1">
+                                  <span className="text-gray-500 ml-1">
                                     (+Rs.{val.extraPrice})
                                   </span>
                                 )}
@@ -297,13 +297,13 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                             onClick={() => setAttributeValue(attr.id, val.id)}
                             className={`px-4 py-2 rounded-lg border text-sm font-medium transition ${
                               isSelected
-                                ? "border-(--accent) bg-[var(--accent)]/10 text-[var(--accent)]"
-                                : "border-[var(--border)] hover:bg-(--card-bg)"
+                                ? "border-blue-600 bg-blue-50 text-blue-600"
+                                : "border-gray-200 hover:bg-gray-50"
                             }`}
                           >
                             {val.value}
                             {val.extraPrice > 0 && (
-                              <span className="text-[var(--foreground)]/60 ml-1">
+                              <span className="text-gray-500 ml-1">
                                 (+Rs.{val.extraPrice})
                               </span>
                             )}
@@ -320,7 +320,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               {currentPriceOptions.map((opt) => (
                 <span
                   key={opt.periodName}
-                  className="inline-block px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--card-bg)] text-sm text-[var(--accent)]"
+                  className="inline-block px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm text-blue-600 shadow-sm"
                 >
                   ₹ {opt.price} / {opt.priceLabel}
                 </span>
@@ -328,7 +328,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </div>
 
             <div className="mb-6">
-              <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">
                 Rental Period
               </h3>
               <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
@@ -337,10 +337,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     type="datetime-local"
                     value={rentalStart.toISOString().slice(0, 16)}
                     onChange={handleStartChange}
-                    className="w-full px-4 py-3 rounded-lg border border-[var(--border)] bg-[var(--card-bg)] outline-none focus:border-[var(--accent)] transition"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-gray-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                   />
                 </div>
-                <span className="hidden sm:inline text-[var(--foreground)]/50">
+                <span className="hidden sm:inline text-gray-500">
                   →
                 </span>
                 <div className="flex-1">
@@ -349,23 +349,23 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     value={rentalEnd.toISOString().slice(0, 16)}
                     onChange={handleEndChange}
                     min={rentalStart.toISOString().slice(0, 16)}
-                    className="w-full px-4 py-3 rounded-lg border border-[var(--border)] bg-[var(--card-bg)] outline-none focus:border-[var(--accent)] transition"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-gray-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                   />
                 </div>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-4 mb-8">
-              <div className="flex items-center rounded-lg border border-[var(--border)] overflow-hidden">
+              <div className="flex items-center rounded-lg border border-gray-200 overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   disabled={quantity <= 1}
-                  className="w-10 h-10 flex items-center justify-center bg-[var(--card-bg)] hover:bg-[var(--border)]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-10 h-10 flex items-center justify-center bg-white hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed text-gray-900"
                 >
                   −
                 </button>
-                <span className="w-12 h-10 flex items-center justify-center border-x border-[var(--border)] text-sm font-medium">
+                <span className="w-12 h-10 flex items-center justify-center border-x border-gray-200 text-sm font-medium text-gray-900">
                   {quantity}
                 </span>
                 <button
@@ -374,7 +374,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     setQuantity((q) => Math.min(currentQuantity, q + 1))
                   }
                   disabled={quantity >= currentQuantity}
-                  className="w-10 h-10 flex items-center justify-center bg-[var(--card-bg)] hover:bg-[var(--border)]/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-10 h-10 flex items-center justify-center bg-white hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed text-gray-900"
                 >
                   +
                 </button>
@@ -401,7 +401,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     setAddToCartError(result.error ?? "Failed to add to cart");
                   }
                 }}
-                className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[var(--accent)] text-white font-medium hover:bg-[var(--accent-hover)] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ShoppingCart className="w-5 h-5" />
                 {addToCartPending ? "Adding…" : "Add to cart"}
@@ -423,7 +423,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                 className={`p-3 rounded-lg border transition ${
                   inWishlist
                     ? "border-red-500/50 bg-red-500/10 text-red-600"
-                    : "border-[var(--border)] hover:bg-[var(--card-bg)]"
+                    : "border-gray-200 hover:bg-gray-50"
                 }`}
                 aria-label={
                   inWishlist ? "Remove from wishlist" : "Add to wishlist"
@@ -435,7 +435,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               </button>
               {/* <button
                 type="button"
-                className="p-3 rounded-lg border border-[var(--border)] hover:bg-[var(--card-bg)] transition"
+                className="p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition"
                 aria-label="Compare"
               >
                 <GitCompare className="w-5 h-5" />
@@ -443,11 +443,11 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </div>
 
             {product.description && (
-              <div className="pt-6 border-t border-[var(--border)]">
-                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">
+              <div className="pt-6 border-t border-gray-200">
+                <h3 className="text-sm font-semibold text-gray-900 mb-2">
                   Description
                 </h3>
-                <p className="text-sm text-[var(--foreground)]/80 whitespace-pre-wrap">
+                <p className="text-sm text-gray-600 whitespace-pre-wrap">
                   {product.description}
                 </p>
               </div>
@@ -455,8 +455,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-(--border)">
-          <div className="h-32 rounded-lg border border-dashed border-(--border) flex items-center justify-center text-[var(--foreground)]/40 text-sm">
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <div className="h-32 rounded-lg border border-dashed border-gray-200 flex items-center justify-center text-gray-400 text-sm">
             Product specifications, reviews, or related products can go here
           </div>
         </div>

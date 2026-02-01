@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { OrderCardData } from "@/types/order";
 import { format } from "date-fns";
 
@@ -36,8 +37,16 @@ export function OrderCard({ cardData }: OrderCardProps) {
   const referenceLabel =
     cardData.type === "order" ? "Order Reference" : "Quotation Reference";
 
+  const href =
+    cardData.type === "order"
+      ? `/vendor/orders/${cardData.id.replace("order-", "")}`
+      : `/vendor/quotations/${cardData.id.replace("quotation-", "")}`;
+
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+    <Link
+      href={href}
+      className="block bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+    >
       <div className="space-y-3">
         <div>
           <h3 className="font-semibold text-base text-gray-900">
@@ -78,6 +87,6 @@ export function OrderCard({ cardData }: OrderCardProps) {
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

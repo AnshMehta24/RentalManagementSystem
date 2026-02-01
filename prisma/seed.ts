@@ -120,7 +120,6 @@ async function main() {
         },
     });
 
-    // ── 2. VENDORS (10) ───────────────────────────────────────────────────────
     console.log('🏪  Creating vendors …');
     const vendors: any[] = [];
     for (let i = 1; i <= VENDOR_COUNT; i++) {
@@ -139,8 +138,6 @@ async function main() {
         vendors.push(v);
     }
 
-    // Make sure index 6 (0‑based) = the 7th vendor created.
-    // Prisma auto‑increments IDs; we store references and use them directly.
     const vendorIds = vendors.map(v => v.id);
     // We'll treat vendors[6].id as "vendor 7" in the business sense.
     const TARGET_VENDOR_ID = vendors[1].id;  // the vendor we bias toward

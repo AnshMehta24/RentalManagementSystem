@@ -150,7 +150,7 @@ export default function ProductsClient({
         showSearch
       />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 md:py-8">
         <div className="flex gap-8">
           <aside className="hidden lg:block w-64 shrink-0 sticky top-28 self-start">
             <FilterSidebar {...filterSidebarProps} />

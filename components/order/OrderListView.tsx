@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo } from "react";
 import type { OrderBoardData, OrderCardData } from "@/types/order";
 import type { OrderStatus, InvoiceStatus } from "@/generated/prisma/enums";
@@ -37,26 +38,30 @@ export function OrderListView({ orders }: Props) {
 
   return (
     <div className="space-y-3">
-      {cards.map((card) => (
-        <div
-          key={card.id}
-          className="grid grid-cols-5 gap-4 items-center border rounded-lg p-4 bg-white text-sm"
-        >
-          <div className="font-medium">{card.customerName}</div>
+      {cards.map((card) => {
+        const orderId = card.id.replace("order-", "");
+        return (
+          <Link
+            key={card.id}
+            href={`/vendor/orders/${orderId}`}
+            className="grid grid-cols-5 gap-4 items-center border rounded-lg p-4 bg-white text-sm hover:bg-gray-50 transition-colors"
+          >
+            <div className="font-medium">{card.customerName}</div>
 
-          <div>{card.reference}</div>
+            <div>{card.reference}</div>
 
-          <div className="truncate">{card.productName}</div>
+            <div className="truncate">{card.productName}</div>
 
-          <div className="font-semibold">
-            ₹{card.totalAmount.toLocaleString("en-IN")}
-          </div>
+            <div className="font-semibold">
+              ₹{card.totalAmount.toLocaleString("en-IN")}
+            </div>
 
-          <div className="capitalize text-gray-600">
-            {card.displayStatus.toLowerCase()}
-          </div>
-        </div>
-      ))}
+            <div className="capitalize text-gray-600">
+              {card.displayStatus.toLowerCase()}
+            </div>
+          </Link>
+        );
+      })}
     </div>
   );
 }

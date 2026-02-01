@@ -6,12 +6,15 @@ export default async function WishlistPage() {
   const products = await getWishlist();
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <>
       <Header showSearch />
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Wishlist</h1>
-        <WishlistClient initialProducts={products} />
-      </div>
-    </div>
+      <main className="flex-1 overflow-auto p-6 md:p-8">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">Wishlist</h1>
+          <p className="text-gray-600 text-sm mb-6">Products you&apos;ve saved for later.</p>
+          <WishlistClient initialProducts={products} />
+        </div>
+      </main>
+    </>
   );
 }

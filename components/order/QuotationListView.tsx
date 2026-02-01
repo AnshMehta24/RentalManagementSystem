@@ -66,9 +66,10 @@ export function QuotationListView({ quotations }: QuotationListViewProps) {
   return (
     <div className="space-y-4">
       {rows.map((row) => (
-        <div
+        <Link
           key={row.id}
-          className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+          href={`/vendor/quotations/${row.id}`}
+          className="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm hover:bg-gray-50 transition-colors"
         >
           <div className="space-y-2">
             <div className="flex items-start justify-between">
@@ -77,9 +78,7 @@ export function QuotationListView({ quotations }: QuotationListViewProps) {
                   <h3 className="font-semibold text-gray-900">
                     {row.customerName}
                   </h3>
-                  <Link href={`/vendor/quotations/${row.id}`}>
-                    <Edit className="w-4 h-4 text-gray-500 ml-auto" />
-                  </Link>
+                  <Edit className="w-4 h-4 text-gray-500 ml-auto" />
                 </div>
                 <p className="text-sm text-gray-500">
                   Quotation #{String(row.id).padStart(5, "0")}
@@ -107,7 +106,7 @@ export function QuotationListView({ quotations }: QuotationListViewProps) {
               Status: {row.status.toLowerCase()}
             </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

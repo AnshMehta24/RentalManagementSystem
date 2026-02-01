@@ -39,14 +39,14 @@ export default function OrdersClient({
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-2 border-b border-[var(--border)]">
+      <div className="flex gap-2 border-b border-gray-200">
         <button
           type="button"
           onClick={() => setActiveTab("quotations")}
           className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition ${
             activeTab === "quotations"
-              ? "border-[var(--accent)] text-[var(--accent)]"
-              : "border-transparent text-[var(--foreground)]/70 hover:text-[var(--foreground)]"
+              ? "border-blue-600 text-blue-600"
+              : "border-transparent text-gray-600 hover:text-gray-900"
           }`}
         >
           <FileText className="w-4 h-4" />
@@ -57,8 +57,8 @@ export default function OrdersClient({
           onClick={() => setActiveTab("orders")}
           className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition ${
             activeTab === "orders"
-              ? "border-[var(--accent)] text-[var(--accent)]"
-              : "border-transparent text-[var(--foreground)]/70 hover:text-[var(--foreground)]"
+              ? "border-blue-600 text-blue-600"
+              : "border-transparent text-gray-600 hover:text-gray-900"
           }`}
         >
           <Package className="w-4 h-4" />
@@ -68,19 +68,19 @@ export default function OrdersClient({
 
       {activeTab === "quotations" && (
         <section>
-          <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
             Your quotations
           </h2>
           {quotations.length === 0 ? (
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-12 text-center">
-              <FileText className="w-12 h-12 mx-auto text-[var(--foreground)]/40 mb-4" />
-              <p className="text-[var(--foreground)]/70 mb-2">No quotations yet</p>
-              <p className="text-sm text-[var(--foreground)]/60 mb-4">
+            <div className="rounded-lg border border-gray-200 bg-white p-12 text-center shadow-sm">
+              <FileText className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+              <p className="text-gray-600 mb-2">No quotations yet</p>
+              <p className="text-sm text-gray-500 mb-4">
                 Quotations are created when you submit your cart at checkout.
               </p>
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] text-white font-medium px-4 py-2 hover:bg-[var(--accent-hover)] transition"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 text-white font-medium px-4 py-2 hover:bg-blue-700 transition"
               >
                 Browse products
               </Link>
@@ -90,20 +90,20 @@ export default function OrdersClient({
               {quotations.map((q) => (
                 <li
                   key={q.id}
-                  className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] overflow-hidden hover:border-[var(--accent)]/50 transition"
+                  className="rounded-lg border border-gray-200 bg-white overflow-hidden hover:border-blue-500/50 transition shadow-sm"
                 >
                   <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="font-semibold text-[var(--foreground)]">
+                        <span className="font-semibold text-gray-900">
                           Quotation #{q.id}
                         </span>
                         {statusBadge(q.status)}
                       </div>
-                      <p className="text-sm text-[var(--foreground)]/70">
+                      <p className="text-sm text-gray-600">
                         {q.vendorCompanyName ?? q.vendorName}
                       </p>
-                      <p className="text-xs text-[var(--foreground)]/60 mt-1">
+                      <p className="text-xs text-gray-500 mt-1">
                         {q.itemCount} item{q.itemCount !== 1 ? "s" : ""}
                         {q.rentalStart && q.rentalEnd && (
                           <> • {formatDate(q.rentalStart)} – {formatDate(q.rentalEnd)}</>
@@ -114,10 +114,10 @@ export default function OrdersClient({
                       </p>
                     </div>
                     <div className="flex items-center gap-4 shrink-0">
-                      <span className="text-sm font-semibold text-[var(--accent)]">
+                      <span className="text-sm font-semibold text-blue-600">
                         Rs.{q.totalAmount.toFixed(0)}
                       </span>
-                      <span className="text-xs text-[var(--foreground)]/50">
+                      <span className="text-xs text-gray-500">
                         {formatDate(q.createdAt)}
                       </span>
                     </div>
@@ -131,19 +131,19 @@ export default function OrdersClient({
 
       {activeTab === "orders" && (
         <section>
-          <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
             Your sales orders
           </h2>
           {orders.length === 0 ? (
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-12 text-center">
-              <Package className="w-12 h-12 mx-auto text-[var(--foreground)]/40 mb-4" />
-              <p className="text-[var(--foreground)]/70 mb-2">No orders yet</p>
-              <p className="text-sm text-[var(--foreground)]/60 mb-4">
+            <div className="rounded-lg border border-gray-200 bg-white p-12 text-center shadow-sm">
+              <Package className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+              <p className="text-gray-600 mb-2">No orders yet</p>
+              <p className="text-sm text-gray-500 mb-4">
                 Orders are created when a quotation is confirmed by the vendor.
               </p>
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] text-white font-medium px-4 py-2 hover:bg-[var(--accent-hover)] transition"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 text-white font-medium px-4 py-2 hover:bg-blue-700 transition"
               >
                 Browse products
               </Link>
@@ -153,23 +153,23 @@ export default function OrdersClient({
               {orders.map((o) => (
                 <li
                   key={o.id}
-                  className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] overflow-hidden hover:border-[var(--accent)]/50 transition"
+                  className="rounded-lg border border-gray-200 bg-white overflow-hidden hover:border-blue-500/50 transition shadow-sm"
                 >
                   <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="font-semibold text-[var(--foreground)]">
+                        <span className="font-semibold text-gray-900">
                           Order #{o.id}
                         </span>
                         {statusBadge(o.status)}
-                        <span className="text-xs text-[var(--foreground)]/50">
+                        <span className="text-xs text-gray-500">
                           (Quotation #{o.quotationId})
                         </span>
                       </div>
-                      <p className="text-sm text-[var(--foreground)]/70">
+                      <p className="text-sm text-gray-600">
                         {o.vendorCompanyName ?? o.vendorName}
                       </p>
-                      <p className="text-xs text-[var(--foreground)]/60 mt-1">
+                      <p className="text-xs text-gray-500 mt-1">
                         {o.itemCount} item{o.itemCount !== 1 ? "s" : ""}
                         {o.rentalStart && o.rentalEnd && (
                           <> • {formatDate(o.rentalStart)} – {formatDate(o.rentalEnd)}</>
@@ -178,10 +178,10 @@ export default function OrdersClient({
                       </p>
                     </div>
                     <div className="flex items-center gap-4 shrink-0">
-                      <span className="text-sm font-semibold text-[var(--accent)]">
+                      <span className="text-sm font-semibold text-blue-600">
                         Rs.{o.totalAmount.toFixed(0)}
                       </span>
-                      <span className="text-xs text-[var(--foreground)]/50">
+                      <span className="text-xs text-gray-500">
                         {formatDate(o.createdAt)}
                       </span>
                     </div>

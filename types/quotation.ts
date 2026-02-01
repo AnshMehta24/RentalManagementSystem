@@ -70,6 +70,14 @@ export const quotationInclude = {
       reservations: true,
     },
   },
+  paymentLinkLogs: {
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      sentToEmail: true,
+      createdAt: true,
+    },
+  },
 } satisfies Prisma.QuotationInclude;
 
 export type QuotationWithRelations = Prisma.QuotationGetPayload<{

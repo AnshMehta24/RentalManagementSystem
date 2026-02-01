@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { Prisma, QuotationStatus } from "@/generated/prisma/client";
 import stripeInstance from "@/lib/stripeInstance";
 import { computeQuotationTotals } from "@/lib/quotation";
+import { sendPaymentLinkEmail } from "@/lib/email/sendPaymentLink";
 
 type Action = "send" | "cancel";
 
@@ -284,18 +285,26 @@ export async function updateQuotationDeliveryCharge(quotationId: number, deliver
   return updated;
 }
 
-/** Create Stripe Checkout Session for quotation; order is created on payment success (webhook). */
-export async function createPaymentLinkForQuotation(quotationId: number): Promise<{ url: string }> {
+/** Create Stripe Checkout Session for quotation; order is created on payment success (webhook). Emails customer, then logs the link in DB. Does not return the URL to the client. */
+export async function createPaymentLinkForQuotation(quotationId: number): Promise<{ success: true }> {
   const user = await getCurrentUser();
   if (!user || user.role !== "VENDOR") throw new Error("Unauthorized");
 
   const quotation = await prisma.quotation.findUnique({
     where: { id: quotationId },
-    include: { items: true, coupon: true, customer: true },
+    include: { items: true, coupon: true, customer: true, vendor: true, order: true },
   });
   if (!quotation || quotation.vendorId !== user.id) throw new Error("Not found or not yours");
   if (quotation.status !== "SENT") throw new Error("Payment link can only be created for sent quotations");
   if (quotation.order) throw new Error("Order already exists for this quotation");
+
+  const existingLog = await prisma.quotationPaymentLinkLog.findFirst({
+    where: { quotationId },
+    orderBy: { createdAt: "desc" },
+  });
+  if (existingLog) {
+    throw new Error("Payment link was already sent to the customer.");
+  }
 
   const { total } = computeQuotationTotals({
     items: quotation.items,
@@ -331,7 +340,26 @@ export async function createPaymentLinkForQuotation(quotationId: number): Promis
   });
 
   if (!session.url) throw new Error("Failed to create payment session");
-  return { url: session.url };
+
+  await sendPaymentLinkEmail({
+    to: quotation.customer.email,
+    customerName: quotation.customer.name,
+    paymentUrl: session.url,
+    quotationId,
+    vendorName: quotation.vendor.companyName ?? quotation.vendor.name,
+  });
+
+  await prisma.quotationPaymentLinkLog.create({
+    data: {
+      quotationId,
+      checkoutUrl: session.url,
+      sentToEmail: quotation.customer.email,
+      sentByUserId: user.id,
+    },
+  });
+
+  revalidatePath(`/vendor/quotations/${quotationId}`);
+  return { success: true };
 }
 
 async function getQuotationById(quotationId: number) {
@@ -386,6 +414,14 @@ const quotationInclude = {
       delivery: true,
       return: true,
       reservations: true,
+    },
+  },
+  paymentLinkLogs: {
+    orderBy: { createdAt: "desc" as const },
+    select: {
+      id: true,
+      sentToEmail: true,
+      createdAt: true,
     },
   },
 } satisfies Prisma.QuotationInclude;

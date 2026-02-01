@@ -193,6 +193,15 @@ export async function saveAddress(data: {
 }): Promise<{ success: boolean; addressId?: number; error?: string }> {
   try {
     const customerId = await getCustomerId();
+    const isDefault = data.isDefault ?? false;
+
+    if (isDefault) {
+      await prisma.address.updateMany({
+        where: { userId: customerId },
+        data: { isDefault: false },
+      });
+    }
+
     const address = await prisma.address.create({
       data: {
         userId: customerId,
@@ -204,7 +213,7 @@ export async function saveAddress(data: {
         state: data.state,
         country: data.country,
         pincode: data.pincode,
-        isDefault: data.isDefault ?? false,
+        isDefault,
       },
     });
     return { success: true, addressId: address.id };
@@ -231,6 +240,15 @@ export async function updateAddress(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const customerId = await getCustomerId();
+    const isDefault = data.isDefault ?? false;
+
+    if (isDefault) {
+      await prisma.address.updateMany({
+        where: { userId: customerId },
+        data: { isDefault: false },
+      });
+    }
+
     await prisma.address.updateMany({
       where: { id: addressId, userId: customerId },
       data: {
@@ -241,7 +259,7 @@ export async function updateAddress(
         state: data.state,
         country: data.country,
         pincode: data.pincode,
-        isDefault: data.isDefault ?? false,
+        isDefault,
       },
     });
     return { success: true };
