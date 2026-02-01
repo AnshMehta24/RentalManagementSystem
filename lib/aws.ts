@@ -93,11 +93,23 @@ async function copyObject(sourceKey: string, destinationKey: string) {
   await s3.send(copyCommand);
 }
 
+/** Returns public URL for an S3 key (use when bucket has public read). */
+function getPublicUrl(key: string): string {
+  const bucket = process.env.S3_BUCKET as string;
+  const region = process.env.S3_REGION as string;
+  const endpoint = process.env.S3_ENDPOINT;
+  if (endpoint) {
+    return `${endpoint}/${bucket}/${key}`;
+  }
+  return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
+}
+
 const s3Service = {
   save,
   getObject,
   deleteObject,
   getPreviewUrl,
+  getPublicUrl,
   saveAndGetPreviewUrl,
   streamToBuffer,
   copyObject,

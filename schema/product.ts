@@ -25,6 +25,7 @@ export const ProductSchema = z
   .object({
     name: z.string().min(3, "Name must be at least 3 characters").max(200, "Name must be less than 200 characters"),
     description: z.string().max(5000, "Description must be less than 5000 characters").optional(),
+    imageUrl: z.union([z.string().url(), z.literal("")]).optional(),
     isRentable: z.boolean(),
     published: z.boolean(),
     selectedAttributes: z.array(z.number().int().positive()).optional(),

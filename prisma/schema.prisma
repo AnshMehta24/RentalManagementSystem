@@ -135,6 +135,7 @@ model User {
   activities    ActivityLog[]
   quotationPaymentLinkLogsSent QuotationPaymentLinkLog[]
 
+  tokens     UserToken[] 
   wishlistItems WishlistItem[]
 
   invoices   Invoice[]
@@ -216,6 +217,7 @@ model Product {
 
   name        String
   description String?
+  imageUrl    String?
   isRentable  Boolean @default(true)
   published   Boolean @default(true)
 
@@ -595,4 +597,18 @@ enum DeliveryChargeType {
   FLAT
   PER_KM
   FREE
+}
+
+model UserToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  userType  String   @map("user_type")
+  purpose   String
+  tokenHash String   @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_tokens")
 }

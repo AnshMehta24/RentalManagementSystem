@@ -115,7 +115,6 @@ export default function SignUpPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        // 🆕 Handle GSTIN-specific errors
         if (result.error?.includes("GSTIN")) {
           step2VendorForm.setError("gstin", {
             type: "manual",
@@ -182,7 +181,6 @@ export default function SignUpPage() {
           )}
         </div>
 
-        {/* Error Banner */}
         {error && (
           <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-sm text-red-800 font-medium">{error}</p>

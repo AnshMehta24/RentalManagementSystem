@@ -26,10 +26,12 @@ export interface FilterSidebarProps {
   selectedColors: string[];
   selectedDuration: string;
   priceRange: [number, number];
+  priceBounds?: { min: number; max: number };
   onBrandToggle: (brand: string) => void;
   onColorToggle: (color: string) => void;
   onDurationChange: (duration: string) => void;
   onPriceRangeChange: (min: number, max: number) => void;
+  onPriceRangeCommit?: (min: number, max: number) => void;
 }
 
 export default function FilterSidebar({
@@ -40,11 +42,20 @@ export default function FilterSidebar({
   selectedColors,
   selectedDuration,
   priceRange,
+  priceBounds = { min: 0, max: 100000 },
   onBrandToggle,
   onColorToggle,
   onDurationChange,
   onPriceRangeChange,
+  onPriceRangeCommit,
 }: FilterSidebarProps) {
+  const { min: priceMin, max: priceMax } = priceBounds;
+  const rangeSpan = Math.max(priceMax - priceMin, 1);
+  const low = Math.max(priceMin, Math.min(priceMax, priceRange[0]));
+  const high = Math.min(priceMax, Math.max(priceMin, priceRange[1]));
+  const safeLow = Math.min(low, high);
+  let safeHigh = Math.max(low, high);
+  if (safeHigh <= safeLow) safeHigh = Math.min(priceMax, safeLow + 1);
   const [brandSearch, setBrandSearch] = useState("");
   const [durationOpen, setDurationOpen] = useState(false);
 
@@ -179,45 +190,69 @@ export default function FilterSidebar({
             <div
               className="absolute inset-y-0 h-2 my-auto bg-blue-600 rounded-full pointer-events-none"
               style={{
-                left: `${(priceRange[0] / 10000) * 100}%`,
-                width: `${((priceRange[1] - priceRange[0]) / 10000) * 100}%`,
+                left: `${((safeLow - priceMin) / rangeSpan) * 100}%`,
+                width: `${((safeHigh - safeLow) / rangeSpan) * 100}%`,
               }}
             />
 
             <input
               type="range"
-              min={1}
-              max={10000}
-              value={priceRange[0]}
+              min={priceMin}
+              max={priceMax}
+              step={Math.max(1, Math.floor(Math.max(1, rangeSpan) / 500))}
+              value={safeLow}
               onChange={(e) => {
                 const val = Number(e.target.value);
-                onPriceRangeChange(
-                  Math.min(val, priceRange[1] - 1),
-                  priceRange[1],
-                );
+                onPriceRangeChange(Math.min(val, safeHigh - 1), safeHigh);
               }}
-              className="absolute inset-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-600 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-track]:bg-transparent"
+              onMouseUp={() => onPriceRangeCommit?.(safeLow, safeHigh)}
+              onTouchEnd={() => onPriceRangeCommit?.(safeLow, safeHigh)}
+              className="absolute inset-0 w-full appearance-none bg-transparent
+    [&::-webkit-slider-runnable-track]:bg-transparent
+    [&::-webkit-slider-thumb]:appearance-none
+    [&::-webkit-slider-thumb]:h-5
+    [&::-webkit-slider-thumb]:w-5
+    [&::-webkit-slider-thumb]:rounded-full
+    [&::-webkit-slider-thumb]:bg-white
+    [&::-webkit-slider-thumb]:border-2
+    [&::-webkit-slider-thumb]:border-blue-600
+    [&::-webkit-slider-thumb]:shadow-md
+    [&::-webkit-slider-thumb]:cursor-pointer
+    [&::-moz-range-track]:bg-transparent
+    z-10"
             />
 
             <input
               type="range"
-              min={1}
-              max={10000}
-              value={priceRange[1]}
+              min={priceMin}
+              max={priceMax}
+              step={Math.max(1, Math.floor(Math.max(1, rangeSpan) / 500))}
+              value={safeHigh}
               onChange={(e) => {
                 const val = Number(e.target.value);
-                onPriceRangeChange(
-                  priceRange[0],
-                  Math.max(val, priceRange[0] + 1),
-                );
+                onPriceRangeChange(safeLow, Math.max(val, safeLow + 1));
               }}
-              className="absolute inset-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-600 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-track]:bg-transparent"
+              onMouseUp={() => onPriceRangeCommit?.(safeLow, safeHigh)}
+              onTouchEnd={() => onPriceRangeCommit?.(safeLow, safeHigh)}
+              className="absolute inset-0 w-full appearance-none bg-transparent
+    [&::-webkit-slider-runnable-track]:bg-transparent
+    [&::-webkit-slider-thumb]:appearance-none
+    [&::-webkit-slider-thumb]:h-5
+    [&::-webkit-slider-thumb]:w-5
+    [&::-webkit-slider-thumb]:rounded-full
+    [&::-webkit-slider-thumb]:bg-white
+    [&::-webkit-slider-thumb]:border-2
+    [&::-webkit-slider-thumb]:border-blue-600
+    [&::-webkit-slider-thumb]:shadow-md
+    [&::-webkit-slider-thumb]:cursor-pointer
+    [&::-moz-range-track]:bg-transparent
+    z-20"
             />
           </div>
 
           <div className="flex items-center justify-between text-sm font-medium text-gray-700">
-            <span>₹{priceRange[0].toLocaleString()}</span>
-            <span>₹{priceRange[1].toLocaleString()}</span>
+            <span>₹{safeLow.toLocaleString()}</span>
+            <span>₹{safeHigh.toLocaleString()}</span>
           </div>
         </div>
       </div>
