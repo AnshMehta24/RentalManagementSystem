@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
 import { JSX } from "react";
 import {
   ArrowRight,
-  ShoppingCart,
+  ShoppingCart, 
   Package,
   CreditCard,
   Shield,
@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 
 export default function Home(): JSX.Element {
-
   const features = [
     {
       icon: Package,
@@ -57,37 +56,37 @@ export default function Home(): JSX.Element {
   ];
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 text-white font-sans overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-50 text-slate-900 font-sans overflow-hidden">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl animate-pulse delay-500" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-sky-400/10 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-cyan-400/5 rounded-full blur-3xl animate-pulse delay-500" />
       </div>
 
-      <header className="relative z-10 border-b border-white/10 bg-slate-950/50 backdrop-blur-xl">
+      <header className="relative z-10 border-b border-blue-200 bg-white/80 backdrop-blur-xl">
         <nav className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-linear-to-br from-purple-500 to-cyan-500 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
                 <ShoppingCart className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-linear-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent">
                   RentalPro
                 </h1>
-                <p className="text-xs text-slate-400">Rental Management</p>
+                <p className="text-xs text-slate-600">Rental Management</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <a
                 href="/login"
-                className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+                className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-blue-700 transition-colors"
               >
                 Sign In
               </a>
               <a
                 href="/signup"
-                className="px-6 py-2.5 text-sm font-medium bg-linear-to-r from-purple-600 to-cyan-600 rounded-lg hover:from-purple-500 hover:to-cyan-500 transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
+                className="px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40"
               >
                 Get Started
               </a>
@@ -99,24 +98,24 @@ export default function Home(): JSX.Element {
       {/* Hero Section */}
       <section className="relative z-10 container mx-auto px-6 pt-20 pb-32">
         <div className="max-w-5xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 bg-purple-500/10 border border-purple-500/20 rounded-full backdrop-blur-sm animate-fade-in">
-            <Sparkles className="w-4 h-4 text-purple-400" />
-            <span className="text-sm text-purple-300">
+          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 bg-blue-100 border border-blue-300 rounded-full backdrop-blur-sm animate-fade-in">
+            <Sparkles className="w-4 h-4 text-blue-600" />
+            <span className="text-sm text-blue-700 font-medium">
               Complete Rental Management Solution
             </span>
           </div>
 
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-black mb-8 leading-tight animate-slide-up">
-            <span className="bg-linear-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-clip-text text-transparent">
               Rent Smarter,
             </span>
             <br />
-            <span className="bg-linear-to-r from-purple-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent animate-gradient">
+            <span className="bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent animate-gradient">
               Grow Faster
             </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in-delay">
+          <p className="text-xl md:text-2xl text-slate-700 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in-delay">
             End-to-end rental management platform for modern businesses.
             Automate quotations, track inventory, process payments, and scale
             your rental operations effortlessly.
@@ -125,14 +124,14 @@ export default function Home(): JSX.Element {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in-delay-2">
             <a
               href="/signup"
-              className="group px-8 py-4 bg-linear-to-r from-purple-600 to-cyan-600 rounded-xl font-semibold text-lg hover:from-purple-500 hover:to-cyan-500 transition-all shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transform flex items-center gap-2"
+              className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transform flex items-center gap-2"
             >
               Start Free Trial
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </a>
             <a
               href="/demo"
-              className="px-8 py-4 bg-slate-800/50 border border-slate-700 rounded-xl font-semibold text-lg hover:bg-slate-700/50 transition-all backdrop-blur-sm"
+              className="px-8 py-4 bg-white border-2 border-blue-300 rounded-xl font-semibold text-lg text-blue-700 hover:bg-blue-50 hover:border-blue-400 transition-all"
             >
               View Demo
             </a>
@@ -143,12 +142,14 @@ export default function Home(): JSX.Element {
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 backdrop-blur-sm hover:bg-slate-800/50 transition-all hover:scale-105 transform"
+                className="bg-white border border-blue-200 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all hover:scale-105 transform"
               >
-                <div className="text-3xl md:text-4xl font-bold bg-linear-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent mb-2">
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">
                   {stat.value}
                 </div>
-                <div className="text-sm text-slate-400">{stat.label}</div>
+                <div className="text-sm text-slate-600 font-medium">
+                  {stat.label}
+                </div>
               </div>
             ))}
           </div>
@@ -159,13 +160,13 @@ export default function Home(): JSX.Element {
       <section className="relative z-10 container mx-auto px-6 py-24">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900">
               Everything You Need to{" "}
-              <span className="bg-linear-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
                 Succeed
               </span>
             </h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
               Powerful features designed to streamline your rental operations
               and delight your customers
             </p>
@@ -177,18 +178,18 @@ export default function Home(): JSX.Element {
               return (
                 <div
                   key={index}
-                  className="group bg-slate-800/30 border border-slate-700/50 rounded-2xl p-8 backdrop-blur-sm hover:bg-slate-800/50 transition-all hover:scale-105 transform hover:border-purple-500/50"
+                  className="group bg-white border border-blue-200 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all hover:scale-105 transform hover:border-blue-400"
                   style={{
                     animationDelay: `${index * 100}ms`,
                   }}
                 >
-                  <div className="w-14 h-14 bg-linear-to-br from-purple-500/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <Icon className="w-7 h-7 text-purple-400" />
+                  <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <Icon className="w-7 h-7 text-blue-600" />
                   </div>
-                  <h3 className="text-xl font-bold mb-3 text-white">
+                  <h3 className="text-xl font-bold mb-3 text-slate-900">
                     {feature.title}
                   </h3>
-                  <p className="text-slate-400 leading-relaxed">
+                  <p className="text-slate-600 leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
@@ -199,23 +200,23 @@ export default function Home(): JSX.Element {
       </section>
 
       {/* How It Works Section */}
-      <section className="relative z-10 container mx-auto px-6 py-24">
+      <section className="relative z-10 container mx-auto px-6 py-24 bg-gradient-to-b from-transparent via-blue-50/50 to-transparent">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900">
               Simple{" "}
-              <span className="bg-linear-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
                 Workflow
               </span>
             </h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
               From quotation to return, manage your entire rental lifecycle
             </p>
           </div>
 
           <div className="relative">
             {/* Connection line */}
-            <div className="absolute top-12 left-12 right-12 h-0.5 bg-linear-to-r from-purple-500 via-cyan-500 to-purple-500 hidden lg:block" />
+            <div className="absolute top-12 left-12 right-12 h-0.5 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 hidden lg:block" />
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[
@@ -241,14 +242,14 @@ export default function Home(): JSX.Element {
                 },
               ].map((item, index) => (
                 <div key={index} className="relative">
-                  <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-8 backdrop-blur-sm hover:bg-slate-800/50 transition-all">
-                    <div className="w-12 h-12 bg-linear-to-br from-purple-500 to-cyan-500 rounded-full flex items-center justify-center mb-6 text-white font-bold text-lg relative z-10">
+                  <div className="bg-white border border-blue-200 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-full flex items-center justify-center mb-6 text-white font-bold text-lg relative z-10 shadow-lg shadow-blue-500/30">
                       {item.step}
                     </div>
-                    <h3 className="text-xl font-bold mb-3 text-white">
+                    <h3 className="text-xl font-bold mb-3 text-slate-900">
                       {item.title}
                     </h3>
-                    <p className="text-slate-400">{item.desc}</p>
+                    <p className="text-slate-600">{item.desc}</p>
                   </div>
                 </div>
               ))}
@@ -259,28 +260,26 @@ export default function Home(): JSX.Element {
 
       {/* CTA Section */}
       <section className="relative z-10 container mx-auto px-6 py-24 mb-24">
-        <div className="max-w-4xl mx-auto bg-linear-to-r from-purple-600/20 to-cyan-600/20 border border-purple-500/30 rounded-3xl p-12 md:p-16 text-center backdrop-blur-sm">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+        <div className="max-w-4xl mx-auto bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl p-12 md:p-16 text-center shadow-2xl shadow-blue-500/30">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
             Ready to Transform Your{" "}
-            <span className="bg-linear-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-              Rental Business?
-            </span>
+            <span className="text-blue-100">Rental Business?</span>
           </h2>
-          <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-blue-50 mb-8 max-w-2xl mx-auto">
             Join hundreds of businesses already managing their rentals smarter
             with RentalPro
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="/signup"
-              className="group px-8 py-4 bg-linear-to-r from-purple-600 to-cyan-600 rounded-xl font-semibold text-lg hover:from-purple-500 hover:to-cyan-500 transition-all shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transform flex items-center gap-2"
+              className="group px-8 py-4 bg-white text-blue-700 rounded-xl font-semibold text-lg hover:bg-blue-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105 transform flex items-center gap-2"
             >
               Get Started Free
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </a>
             <a
               href="/contact"
-              className="px-8 py-4 text-lg font-semibold text-slate-300 hover:text-white transition-colors"
+              className="px-8 py-4 text-lg font-semibold text-white hover:text-blue-100 transition-colors border-2 border-white/30 hover:border-white/50 rounded-xl"
             >
               Contact Sales
             </a>
@@ -289,84 +288,84 @@ export default function Home(): JSX.Element {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-white/10 bg-slate-950/50 backdrop-blur-xl">
+      <footer className="relative z-10 border-t border-blue-200 bg-white/80 backdrop-blur-xl">
         <div className="container mx-auto px-6 py-12">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 bg-linear-to-br from-purple-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
                   <ShoppingCart className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-xl font-bold bg-linear-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                <h3 className="text-xl font-bold bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent">
                   RentalPro
                 </h3>
               </div>
-              <p className="text-slate-400 text-sm">
+              <p className="text-slate-600 text-sm">
                 Modern rental management for modern businesses
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-sm text-slate-400">
+              <h4 className="font-semibold mb-4 text-slate-900">Product</h4>
+              <ul className="space-y-2 text-sm text-slate-600">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" className="hover:text-blue-700 transition-colors">
                     Features
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" className="hover:text-blue-700 transition-colors">
                     Pricing
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" className="hover:text-blue-700 transition-colors">
                     FAQ
                   </a>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-sm text-slate-400">
+              <h4 className="font-semibold mb-4 text-slate-900">Company</h4>
+              <ul className="space-y-2 text-sm text-slate-600">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" className="hover:text-blue-700 transition-colors">
                     About
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" className="hover:text-blue-700 transition-colors">
                     Blog
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" className="hover:text-blue-700 transition-colors">
                     Careers
                   </a>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-slate-400">
+              <h4 className="font-semibold mb-4 text-slate-900">Legal</h4>
+              <ul className="space-y-2 text-sm text-slate-600">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" className="hover:text-blue-700 transition-colors">
                     Privacy
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" className="hover:text-blue-700 transition-colors">
                     Terms
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" className="hover:text-blue-700 transition-colors">
                     Security
                   </a>
                 </li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-white/10 pt-8 text-center text-sm text-slate-400">
+          <div className="border-t border-blue-200 pt-8 text-center text-sm text-slate-600">
             <p>© 2024 RentalPro. All rights reserved.</p>
           </div>
         </div>

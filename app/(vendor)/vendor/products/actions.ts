@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { ProductSchema, type ProductFormValues } from "@/schema/product";
 import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/getCurrentUser";
+import s3Service from "@/lib/aws";
 
 export async function getVendor() {
   try {
@@ -58,6 +59,59 @@ export async function getVendor() {
   }
 }
 
+const ALLOWED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+];
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+
+export async function uploadProductImage(formData: FormData) {
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser || currentUser.role !== "VENDOR") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const file = formData.get("image") as File | null;
+    if (!file || !(file instanceof File) || file.size === 0) {
+      return { success: false, error: "No image file provided" };
+    }
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      return {
+        success: false,
+        error: "Invalid file type. Use JPEG, PNG, WebP or GIF.",
+      };
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      return { success: false, error: "Image must be 5MB or smaller." };
+    }
+
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const safeName = file.name
+      .replace(/\.[^.]+$/, "")
+      .replace(/[^a-zA-Z0-9-_]/g, "_")
+      .slice(0, 80);
+
+    const key = `products/${currentUser.id}/${Date.now()}-${safeName}.${ext}`;
+
+    await s3Service.save(file, key);
+    const publicUrl = await s3Service.saveAndGetPreviewUrl(file, key);
+
+    console.log(publicUrl, "PUBLIC URL");
+
+    return { success: true, url: publicUrl };
+  } catch (error) {
+    console.error("Error uploading product image:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Upload failed",
+    };
+  }
+}
+
 export async function getProducts() {
   try {
     const currentUser = await getCurrentUser();
@@ -73,7 +127,7 @@ export async function getProducts() {
       return {
         success: false,
         error: "Unauthorized: Only vendors can access this resource",
-      };  
+      };
     }
 
     const vendorId = currentUser.id;
@@ -238,6 +292,7 @@ export async function createProduct(data: ProductFormValues) {
         vendorId: vendorId,
         name: validatedData.name,
         description: validatedData.description,
+        imageUrl: validatedData.imageUrl?.trim() || null,
         isRentable: validatedData.isRentable,
         published: validatedData.published,
         variants: {
@@ -639,6 +694,7 @@ export async function updateProduct(
       data: {
         name: validatedData.name,
         description: validatedData.description,
+        imageUrl: validatedData.imageUrl?.trim() || null,
         isRentable: validatedData.isRentable,
         published: validatedData.published,
         variants: {

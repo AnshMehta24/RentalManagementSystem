@@ -1,10 +1,14 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight, Filter, X, Heart } from "lucide-react";
-import { addToWishlist, removeFromWishlist } from "@/app/(customer)/actions/wishlist";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "@/app/(customer)/actions/wishlist";
 import Header from "./Header";
 import FilterSidebar from "./FilterSidebar";
 import type { FilterSidebarProps } from "./FilterSidebar";
@@ -39,25 +43,89 @@ interface ProductsClientProps {
   products: Product[];
   filters: Filters;
   initialWishlistIds?: number[];
+  priceBounds?: { min: number; max: number };
+  initialSearch?: string;
+  initialBrandIds?: number[];
+  initialColors?: string[];
+  initialPriceRange?: [number, number];
 }
 
 export default function ProductsClient({
   products,
   filters,
   initialWishlistIds = [],
+  priceBounds = { min: 0, max: 100000 },
+  initialSearch = "",
+  initialBrandIds = [],
+  initialColors = [],
+  initialPriceRange,
 }: ProductsClientProps) {
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const pathname = usePathname();
+
+  const clampPrice = (min: number, max: number): [number, number] => {
+    const low = Math.max(priceBounds.min, Math.min(priceBounds.max, min));
+    const high = Math.min(priceBounds.max, Math.max(priceBounds.min, max));
+    return [low, low <= high ? high : priceBounds.max];
+  };
+  const defaultPriceRange: [number, number] = [
+    priceBounds.min,
+    priceBounds.max,
+  ];
+  const [selectedBrands, setSelectedBrands] = useState<string[]>(() => {
+    if (!initialBrandIds.length) return [];
+    return filters.brands
+      .filter((b) => initialBrandIds.includes(b.id))
+      .map((b) => b.name);
+  });
+  const [selectedColors, setSelectedColors] = useState<string[]>(
+    () => initialColors,
+  );
   const [selectedDuration, setSelectedDuration] = useState("All Duration");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [priceRange, setPriceRange] = useState<[number, number]>(() =>
+    clampPrice(
+      initialPriceRange?.[0] ?? priceBounds.min,
+      initialPriceRange?.[1] ?? priceBounds.max,
+    ),
+  );
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [wishlistIds, setWishlistIds] = useState<Set<number>>(
-    () => new Set(initialWishlistIds)
+    () => new Set(initialWishlistIds),
   );
-  const [wishlistTogglingId, setWishlistTogglingId] = useState<number | null>(null);
+  const [wishlistTogglingId, setWishlistTogglingId] = useState<number | null>(
+    null,
+  );
   const itemsPerPage = 12;
+
+  useEffect(() => {
+    setSearchQuery(initialSearch);
+  }, [initialSearch]);
+  useEffect(() => {
+    setSelectedBrands(
+      initialBrandIds.length
+        ? filters.brands
+            .filter((b) => initialBrandIds.includes(b.id))
+            .map((b) => b.name)
+        : [],
+    );
+  }, [initialBrandIds.join(","), filters.brands]);
+  useEffect(() => {
+    setSelectedColors(initialColors);
+  }, [initialColors.join(",")]);
+  useEffect(() => {
+    setPriceRange(
+      clampPrice(
+        initialPriceRange?.[0] ?? priceBounds.min,
+        initialPriceRange?.[1] ?? priceBounds.max,
+      ),
+    );
+  }, [
+    initialPriceRange?.[0],
+    initialPriceRange?.[1],
+    priceBounds.min,
+    priceBounds.max,
+  ]);
 
   const toggleWishlist = async (e: React.MouseEvent, productId: number) => {
     e.preventDefault();
@@ -78,56 +146,71 @@ export default function ProductsClient({
     }
   };
 
+  const handlePriceRangeChange = (min: number, max: number) => {
+    const clamped = clampPrice(min, max);
+    setPriceRange(clamped);
+  };
+
+  const handlePriceRangeCommit = (min: number, max: number) => {
+    pushFilters({ priceRange: clampPrice(min, max) });
+  };
+
+  const pushFilters = (updates?: {
+    search?: string;
+    brandIds?: number[];
+    colors?: string[];
+    priceRange?: [number, number];
+  }) => {
+    const search = updates?.search ?? searchQuery;
+    const brandIds =
+      updates?.brandIds ??
+      (selectedBrands.length
+        ? filters.brands
+            .filter((b) => selectedBrands.includes(b.name))
+            .map((b) => b.id)
+        : []);
+    const colors = updates?.colors ?? selectedColors;
+    const range = updates?.priceRange ?? priceRange;
+    const params = new URLSearchParams();
+    if (search.trim()) params.set("q", search.trim());
+    if (brandIds.length) params.set("brand", brandIds.join(","));
+    if (colors.length) params.set("color", colors.join(","));
+    if (range[0] > priceBounds.min) params.set("minPrice", String(range[0]));
+    if (range[1] < priceBounds.max) params.set("maxPrice", String(range[1]));
+    const qs = params.toString();
+    const url = qs ? `${pathname}?${qs}` : pathname;
+    window.location.href = url;
+  };
+
   const toggleBrand = (brand: string) => {
-    setSelectedBrands((prev) =>
-      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand],
-    );
+    const next = selectedBrands.includes(brand)
+      ? selectedBrands.filter((b) => b !== brand)
+      : [...selectedBrands, brand];
+    setSelectedBrands(next);
+    const brandIds = next.length
+      ? filters.brands.filter((b) => next.includes(b.name)).map((b) => b.id)
+      : [];
+    pushFilters({ brandIds });
   };
 
   const toggleColor = (color: string) => {
-    setSelectedColors((prev) =>
-      prev.includes(color.toLowerCase())
-        ? prev.filter((c) => c !== color.toLowerCase())
-        : [...prev, color.toLowerCase()],
-    );
+    const next = selectedColors.includes(color.toLowerCase())
+      ? selectedColors.filter((c) => c !== color.toLowerCase())
+      : [...selectedColors, color.toLowerCase()];
+    setSelectedColors(next);
+    pushFilters({ colors: next });
   };
 
-  const handlePriceRangeChange = (min: number, max: number) => {
-    setPriceRange([min, max]);
-  };
-
-  const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      const brandMatch =
-        selectedBrands.length === 0 || selectedBrands.includes(product.brand);
-
-      const colorMatch =
-        selectedColors.length === 0 ||
-        selectedColors.includes(product.color.toLowerCase());
-
-      const priceValue = product.variant?.salePrice ?? 0;
-      const priceMatch =
-        priceValue >= priceRange[0] && priceValue <= priceRange[1];
-
-      const searchMatch =
-        searchQuery === "" ||
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description
-          ?.toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        product.brand.toLowerCase().includes(searchQuery.toLowerCase());
-
-      return brandMatch && colorMatch && priceMatch && searchMatch;
-    });
-  }, [products, selectedBrands, selectedColors, priceRange, searchQuery]);
-
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-
-  const paginatedProducts = filteredProducts.slice(
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const paginatedProducts = products.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
 
+  const clampedPriceRange: [number, number] = clampPrice(
+    priceRange[0],
+    priceRange[1],
+  );
   const filterSidebarProps: FilterSidebarProps = {
     brands: filters.brands,
     colors: filters.colors,
@@ -135,11 +218,13 @@ export default function ProductsClient({
     selectedBrands,
     selectedColors,
     selectedDuration,
-    priceRange,
+    priceRange: clampedPriceRange,
+    priceBounds,
     onBrandToggle: toggleBrand,
     onColorToggle: toggleColor,
     onDurationChange: setSelectedDuration,
     onPriceRangeChange: handlePriceRangeChange,
+    onPriceRangeCommit: handlePriceRangeCommit,
   };
 
   return (
@@ -147,6 +232,7 @@ export default function ProductsClient({
       <Header
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        onSearchSubmit={() => pushFilters({ search: searchQuery })}
         showSearch
       />
 
@@ -165,7 +251,7 @@ export default function ProductsClient({
                 </span>{" "}
                 of{" "}
                 <span className="font-medium text-gray-900">
-                  {filteredProducts.length}
+                  {products.length}
                 </span>{" "}
                 products
               </p>
@@ -183,73 +269,82 @@ export default function ProductsClient({
               {paginatedProducts.map((product) => {
                 const inWishlist = wishlistIds.has(product.id);
                 return (
-                <Link
-                  key={product.id}
-                  href={`/products/${product.id}`}
-                  className="group relative bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-sm transition"
-                >
-                  <div className="relative aspect-4/3 bg-gray-100">
-                    {!product.inStock && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <span className="text-xs font-semibold text-white px-3 py-1 rounded">
-                          Out of stock
-                        </span>
-                      </div>
-                    )}
-                    <button
-                      type="button"
-                      onClick={(e) => toggleWishlist(e, product.id)}
-                      disabled={wishlistTogglingId === product.id}
-                      className="absolute top-2 right-2 z-10 p-2 rounded-full bg-white/90 shadow border border-gray-200 hover:bg-gray-50 disabled:opacity-50 transition"
-                      aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-                    >
-                      <Heart
-                        className={`w-5 h-5 ${
-                          inWishlist ? "fill-red-500 text-red-500" : "text-gray-500"
-                        }`}
+                  <Link
+                    key={product.id}
+                    href={`/products/${product.id}`}
+                    className="group relative bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-sm transition"
+                  >
+                    <div className="relative aspect-4/3 bg-gray-100">
+                      {!product.inStock && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                          <span className="text-xs font-semibold text-white px-3 py-1 rounded">
+                            Out of stock
+                          </span>
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={(e) => toggleWishlist(e, product.id)}
+                        disabled={wishlistTogglingId === product.id}
+                        className="absolute top-2 right-2 z-10 p-2 rounded-full bg-white/90 shadow border border-gray-200 hover:bg-gray-50 disabled:opacity-50 transition"
+                        aria-label={
+                          inWishlist
+                            ? "Remove from wishlist"
+                            : "Add to wishlist"
+                        }
+                      >
+                        <Heart
+                          className={`w-5 h-5 ${
+                            inWishlist
+                              ? "fill-red-500 text-red-500"
+                              : "text-gray-500"
+                          }`}
+                        />
+                      </button>
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 25vw"
+                        unoptimized
                       />
-                    </button>
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 25vw"
-                    />
-                  </div>
-
-                  <div className="p-4 space-y-3">
-                    <h3 className="text-sm font-semibold line-clamp-2">
-                      {product.name}
-                    </h3>
-
-                    <p className="text-base font-semibold text-blue-600">
-                      {product.price}
-                    </p>
-
-                    <div className="text-xs text-gray-500 space-y-1">
-                      <p>Vendor: {product.vendorName}</p>
-                      {product.category && <p>Category: {product.category}</p>}
                     </div>
 
-                    {product.variant && (
-                      <p
-                        className={`text-xs font-medium ${
-                          product.variant.quantity > 0
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {product.variant.quantity} available
+                    <div className="p-4 space-y-3">
+                      <h3 className="text-sm font-semibold line-clamp-2">
+                        {product.name}
+                      </h3>
+
+                      <p className="text-base font-semibold text-blue-600">
+                        {product.price}
                       </p>
-                    )}
-                  </div>
-                </Link>
-              );
+
+                      <div className="text-xs text-gray-500 space-y-1">
+                        <p>Vendor: {product.vendorName}</p>
+                        {product.category && (
+                          <p>Category: {product.category}</p>
+                        )}
+                      </div>
+
+                      {product.variant && (
+                        <p
+                          className={`text-xs font-medium ${
+                            product.variant.quantity > 0
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {product.variant.quantity} available
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                );
               })}
             </div>
 
-            {filteredProducts.length === 0 && (
+            {products.length === 0 && (
               <div className="text-center py-24">
                 <Filter className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">
@@ -261,11 +356,7 @@ export default function ProductsClient({
 
                 <button
                   onClick={() => {
-                    setSelectedBrands([]);
-                    setSelectedColors([]);
-                    setPriceRange([0, 10000]);
-                    setSearchQuery("");
-                    setCurrentPage(1);
+                    window.location.href = pathname;
                   }}
                   className="rounded-md bg-blue-600 px-6 py-2.5 text-white text-sm font-medium hover:bg-blue-700 transition"
                 >
@@ -274,7 +365,7 @@ export default function ProductsClient({
               </div>
             )}
 
-            {filteredProducts.length > 0 && totalPages > 1 && (
+            {products.length > 0 && totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-10">
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -354,4 +445,3 @@ export default function ProductsClient({
     </div>
   );
 }
-  

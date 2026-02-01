@@ -10,7 +10,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -73,7 +73,7 @@ export default function LoginPage() {
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign in to your account</h2>
           <p className="text-gray-600">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <a href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
               Create one
             </a>

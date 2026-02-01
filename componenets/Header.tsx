@@ -11,12 +11,14 @@ import { getWishlistCount } from "@/app/(customer)/actions/wishlist";
 interface HeaderProps {
   searchQuery?: string;
   onSearchChange?: (value: string) => void;
+  onSearchSubmit?: () => void;
   showSearch?: boolean;
 }
 
 export default function Header({
   searchQuery = "",
   onSearchChange,
+  onSearchSubmit,
   showSearch = true,
 }: HeaderProps) {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -71,10 +73,12 @@ export default function Header({
                     placeholder="Search..."
                     value={searchQuery}
                     onChange={(e) => onSearchChange?.(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && onSearchSubmit?.()}
                     className="flex-1 bg-transparent px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-500"
                   />
                   <button
                     type="button"
+                    onClick={() => onSearchSubmit?.()}
                     className="p-2.5 border-l border-gray-200 hover:bg-gray-100 transition text-gray-600"
                     aria-label="Search"
                   >
