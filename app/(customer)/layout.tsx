@@ -12,5 +12,9 @@ export default async function CustomerLayout({
     return null;
   }
 
-  return <AuthProvider user={user}>{children}</AuthProvider>;
+  return (
+    <AuthProvider user={user}>
+      <div className="min-h-screen bg-gray-50">{children}</div>
+    </AuthProvider>
+  );
 }

@@ -54,20 +54,20 @@ export default function FilterSidebar({
 
   return (
     <aside className="w-full lg:w-64 shrink-0 space-y-6">
-      <div className="rounded-lg border border-(--border) bg-(--card-bg) p-4">
-        <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center justify-between">
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center justify-between">
           Brand
-          <ChevronDown className="w-4 h-4 opacity-70" />
+          <ChevronDown className="w-4 h-4 text-gray-500" />
         </h3>
 
         <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--foreground)/50" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
           <input
             type="text"
             placeholder="Search brand..."
             value={brandSearch}
             onChange={(e) => setBrandSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-(--border) bg-background outline-none placeholder:text-(--foreground)/50 focus:border-(--accent)"
+            className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 bg-white text-gray-900 outline-none placeholder:text-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           />
         </div>
 
@@ -75,28 +75,28 @@ export default function FilterSidebar({
           {filteredBrands.map((brand) => (
             <label
               key={brand.id}
-              className="flex items-center gap-2 cursor-pointer text-sm text-(--foreground)/90 hover:text-foreground"
+              className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 hover:text-gray-900"
             >
               <input
                 type="checkbox"
                 checked={selectedBrands.includes(brand.name)}
                 onChange={() => onBrandToggle(brand.name)}
-                className="w-4 h-4 rounded border-(--border) bg-background text-(--accent) focus:ring-(--accent)"
+                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
               <span className="truncate">{brand.name}</span>
             </label>
           ))}
 
           {filteredBrands.length === 0 && (
-            <p className="text-sm text-(--foreground)/50">No brands match</p>
+            <p className="text-sm text-gray-500">No brands match</p>
           )}
         </div>
       </div>
 
-      <div className="rounded-lg border border-(--border) bg-(--card-bg) p-4">
-        <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center justify-between">
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center justify-between">
           Color
-          <ChevronDown className="w-4 h-4 opacity-70" />
+          <ChevronDown className="w-4 h-4 text-gray-500" />
         </h3>
 
         <div className="flex flex-wrap gap-2">
@@ -107,8 +107,8 @@ export default function FilterSidebar({
               onClick={() => onColorToggle(color.name)}
               className={`w-8 h-8 rounded-full border-2 transition shrink-0 ${
                 selectedColors.includes(color.name)
-                  ? "border-(--accent) ring-2 ring-(--accent)/30"
-                  : "border-(--border) hover:border-(--foreground)/50"
+                  ? "border-blue-600 ring-2 ring-blue-600/30"
+                  : "border-gray-200 hover:border-gray-400"
               }`}
               style={{ backgroundColor: color.hex }}
               title={color.name}
@@ -168,7 +168,7 @@ export default function FilterSidebar({
       </div> */}
 
       <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-        <h3 className="text-sm font-semibold text-gray-800 mb-4">
+        <h3 className="text-sm font-semibold text-gray-900 mb-4">
           Price Range
         </h3>
 
@@ -177,7 +177,7 @@ export default function FilterSidebar({
             <div className="absolute inset-y-0 left-0 right-0 h-2 my-auto bg-gray-200 rounded-full" />
 
             <div
-              className="absolute inset-y-0 h-2 my-auto bg-purple-600 rounded-full pointer-events-none"
+              className="absolute inset-y-0 h-2 my-auto bg-blue-600 rounded-full pointer-events-none"
               style={{
                 left: `${(priceRange[0] / 10000) * 100}%`,
                 width: `${((priceRange[1] - priceRange[0]) / 10000) * 100}%`,
@@ -196,7 +196,7 @@ export default function FilterSidebar({
                   priceRange[1],
                 );
               }}
-              className="absolute inset-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-purple-600 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-track]:bg-transparent"
+              className="absolute inset-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-600 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-track]:bg-transparent"
             />
 
             <input
@@ -211,7 +211,7 @@ export default function FilterSidebar({
                   Math.max(val, priceRange[0] + 1),
                 );
               }}
-              className="absolute inset-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-purple-600 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-track]:bg-transparent"
+              className="absolute inset-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-600 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-track]:bg-transparent"
             />
           </div>
 

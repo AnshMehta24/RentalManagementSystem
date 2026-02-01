@@ -220,11 +220,11 @@ export default function CheckoutClient({
 
   if (grouped.length === 0 && !submitResult?.success) {
     return (
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-12 text-center">
-        <p className="text-[var(--foreground)]/80 mb-4">Your cart is empty.</p>
+      <div className="rounded-lg border border-gray-200 bg-white p-12 text-center">
+        <p className="text-gray-900/80 mb-4">Your cart is empty.</p>
         <Link
           href="/products"
-          className="inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-4 py-2 text-white font-medium hover:bg-[var(--accent-hover)] transition"
+          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 transition"
         >
           Browse products
         </Link>
@@ -237,43 +237,43 @@ export default function CheckoutClient({
       {/* Left: Checkout form - Shopify style */}
       <div className="lg:col-span-3 space-y-6">
         {/* Cart items (editable) - desktop */}
-        <section className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5 hidden lg:block">
-          <h2 className="text-sm font-semibold text-[var(--foreground)] mb-3">Cart items</h2>
-          <ul className="divide-y divide-[var(--border)]">
+        <section className="rounded-lg border border-gray-200 bg-white p-5 hidden lg:block">
+          <h2 className="text-sm font-semibold text-gray-900 mb-3">Cart items</h2>
+          <ul className="divide-y divide-gray-200">
             {grouped.flatMap((g) =>
               g.items.map((item) => (
                 <li key={item.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="min-w-0">
                     <p className="font-medium text-sm truncate">{item.productName}</p>
-                    <p className="text-xs text-[var(--foreground)]/60">
+                    <p className="text-xs text-gray-900/60">
                       {formatDate(item.rentalStart)} → {formatDate(item.rentalEnd)}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <div className="flex items-center rounded border border-[var(--border)] overflow-hidden">
+                    <div className="flex items-center rounded border border-gray-200 overflow-hidden">
                       <button
                         type="button"
                         disabled={updatingId === item.id || item.quantity <= 1}
                         onClick={() => handleQuantity(item.id, item.quantity - 1)}
-                        className="w-8 h-8 flex items-center justify-center hover:bg-[var(--border)]/50 disabled:opacity-50"
+                        className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50"
                       >
                         <Minus className="w-3 h-3" />
                       </button>
-                      <span className="w-8 text-center text-sm border-x border-[var(--border)]">{item.quantity}</span>
+                      <span className="w-8 text-center text-sm border-x border-gray-200">{item.quantity}</span>
                       <button
                         type="button"
                         disabled={updatingId === item.id}
                         onClick={() => handleQuantity(item.id, item.quantity + 1)}
-                        className="w-8 h-8 flex items-center justify-center hover:bg-[var(--border)]/50 disabled:opacity-50"
+                        className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50"
                       >
                         <Plus className="w-3 h-3" />
                       </button>
                     </div>
-                    <span className="text-sm font-medium text-[var(--accent)] w-20 text-right">Rs.{item.price * item.quantity}</span>
+                    <span className="text-sm font-medium text-blue-600 w-20 text-right">Rs.{item.price * item.quantity}</span>
                     <button
                       type="button"
                       onClick={() => handleRemove(item.id)}
-                      className="p-1.5 rounded border border-[var(--border)] hover:bg-red-500/10 text-[var(--foreground)]/70"
+                      className="p-1.5 rounded border border-gray-200 hover:bg-red-500/10 text-gray-600"
                       aria-label="Remove"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -286,22 +286,22 @@ export default function CheckoutClient({
         </section>
 
         {/* Contact */}
-        <section className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5">
-          <h2 className="text-sm font-semibold text-[var(--foreground)] mb-3 flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-[var(--accent)] text-white text-xs flex items-center justify-center">1</span>
+        <section className="rounded-lg border border-gray-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">1</span>
             Contact
           </h2>
-          <p className="text-sm text-[var(--foreground)]/80">{customerEmail}</p>
+          <p className="text-sm text-gray-900/80">{customerEmail}</p>
         </section>
 
         {/* Shipping address */}
-        <section className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5">
-          <h2 className="text-sm font-semibold text-[var(--foreground)] mb-3 flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-[var(--accent)] text-white text-xs flex items-center justify-center">2</span>
+        <section className="rounded-lg border border-gray-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">2</span>
             Shipping address
           </h2>
           {fulfillmentType === "DELIVERY" && (
-            <p className="text-xs text-[var(--foreground)]/70 mb-3">
+            <p className="text-xs text-gray-600 mb-3">
               A delivery address is required to place your order.
             </p>
           )}
@@ -313,8 +313,8 @@ export default function CheckoutClient({
                     key={a.id}
                     className={`flex flex-col sm:flex-row sm:items-center gap-2 p-3 rounded-lg border ${
                       shippingAddressId === a.id
-                        ? "border-[var(--accent)] bg-[var(--accent)]/5"
-                        : "border-[var(--border)] bg-[var(--background)]/30"
+                        ? "border-blue-600 bg-blue-50"
+                        : "border-gray-200 bg-gray-50"
                     }`}
                   >
                     <label className="flex-1 cursor-pointer min-w-0">
@@ -325,7 +325,7 @@ export default function CheckoutClient({
                         onChange={() => setShippingAddressId(a.id)}
                         className="sr-only"
                       />
-                      <span className="text-sm text-[var(--foreground)] block truncate">
+                      <span className="text-sm text-gray-900 block truncate">
                         {a.name && <span className="font-medium">{a.name}, </span>}
                         {formatAddress(a)}
                       </span>
@@ -337,7 +337,7 @@ export default function CheckoutClient({
                           setEditingAddressId(a.id);
                           setShowNewAddress(true);
                         }}
-                        className="p-2 rounded-lg border border-[var(--border)] hover:bg-[var(--border)]/50 text-[var(--foreground)]/70 hover:text-[var(--foreground)] transition"
+                        className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition"
                         aria-label="Edit address"
                       >
                         <Pencil className="w-3.5 h-3.5" />
@@ -345,7 +345,7 @@ export default function CheckoutClient({
                       <button
                         type="button"
                         onClick={() => handleDeleteAddress(a.id)}
-                        className="p-2 rounded-lg border border-[var(--border)] hover:bg-red-500/10 hover:border-red-500/50 text-[var(--foreground)]/70 hover:text-red-600 transition"
+                        className="p-2 rounded-lg border border-gray-200 hover:bg-red-500/10 hover:border-red-500/50 text-gray-600 hover:text-red-600 transition"
                         aria-label="Remove address"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -362,25 +362,25 @@ export default function CheckoutClient({
                   setEditingAddressId(null);
                   setShowNewAddress(true);
                 }}
-                className="text-sm text-[var(--accent)] hover:underline"
+                className="text-sm text-blue-600 hover:underline"
               >
                 + Add new address
               </button>
             )}
             {showNewAddress && (
-              <form onSubmit={handleSaveAddress} className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[var(--border)]">
-                <input name="name" placeholder="Name" defaultValue={editingAddress?.name ?? ""} className="sm:col-span-2 px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] text-sm" />
-                <input name="line1" placeholder="Address line 1" required defaultValue={editingAddress?.line1 ?? ""} className="sm:col-span-2 px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] text-sm" />
-                <input name="line2" placeholder="Address line 2" defaultValue={editingAddress?.line2 ?? ""} className="sm:col-span-2 px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] text-sm" />
-                <input name="city" placeholder="City" required defaultValue={editingAddress?.city ?? ""} className="px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] text-sm" />
-                <input name="state" placeholder="State" required defaultValue={editingAddress?.state ?? ""} className="px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] text-sm" />
-                <input name="country" placeholder="Country" required defaultValue={editingAddress?.country ?? ""} className="px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] text-sm" />
-                <input name="pincode" placeholder="Pincode" required defaultValue={editingAddress?.pincode ?? ""} className="px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] text-sm" />
+              <form onSubmit={handleSaveAddress} className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-gray-200">
+                <input name="name" placeholder="Name" defaultValue={editingAddress?.name ?? ""} className="sm:col-span-2 px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm" />
+                <input name="line1" placeholder="Address line 1" required defaultValue={editingAddress?.line1 ?? ""} className="sm:col-span-2 px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm" />
+                <input name="line2" placeholder="Address line 2" defaultValue={editingAddress?.line2 ?? ""} className="sm:col-span-2 px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm" />
+                <input name="city" placeholder="City" required defaultValue={editingAddress?.city ?? ""} className="px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm" />
+                <input name="state" placeholder="State" required defaultValue={editingAddress?.state ?? ""} className="px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm" />
+                <input name="country" placeholder="Country" required defaultValue={editingAddress?.country ?? ""} className="px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm" />
+                <input name="pincode" placeholder="Pincode" required defaultValue={editingAddress?.pincode ?? ""} className="px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm" />
                 {addressFormError && (
                   <p className="sm:col-span-2 text-sm text-red-600">{addressFormError}</p>
                 )}
                 <div className="sm:col-span-2 flex gap-2">
-                  <button type="submit" className="rounded-lg bg-[var(--accent)] text-white px-3 py-2 text-sm font-medium">
+                  <button type="submit" className="rounded-lg bg-blue-600 text-white px-3 py-2 text-sm font-medium">
                     {editingAddressId ? "Update address" : "Save address"}
                   </button>
                   {addresses.length > 0 && (
@@ -391,7 +391,7 @@ export default function CheckoutClient({
                         setEditingAddressId(null);
                         setAddressFormError(null);
                       }}
-                      className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm"
+                      className="rounded-lg border border-gray-200 px-3 py-2 text-sm"
                     >
                       Cancel
                     </button>
@@ -403,9 +403,9 @@ export default function CheckoutClient({
         </section>
 
         {/* Delivery method */}
-        <section className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5">
-          <h2 className="text-sm font-semibold text-[var(--foreground)] mb-3 flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-[var(--accent)] text-white text-xs flex items-center justify-center">3</span>
+        <section className="rounded-lg border border-gray-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">3</span>
             Delivery method
           </h2>
           <div className="flex gap-4">
@@ -415,7 +415,7 @@ export default function CheckoutClient({
                 name="fulfillment"
                 checked={fulfillmentType === "DELIVERY"}
                 onChange={() => setFulfillmentType("DELIVERY")}
-                className="text-[var(--accent)]"
+                className="text-blue-600"
               />
               <Truck className="w-4 h-4" />
               <span className="text-sm">Delivery</span>
@@ -426,21 +426,21 @@ export default function CheckoutClient({
                 name="fulfillment"
                 checked={fulfillmentType === "STORE_PICKUP"}
                 onChange={() => setFulfillmentType("STORE_PICKUP")}
-                className="text-[var(--accent)]"
+                className="text-blue-600"
               />
               <MapPin className="w-4 h-4" />
               <span className="text-sm">Store pickup</span>
             </label>
           </div>
           {fulfillmentType === "DELIVERY" && shippingAddressId && deliveryLoading && (
-            <p className="text-sm text-[var(--foreground)]/60 mt-2">Calculating delivery charge…</p>
+            <p className="text-sm text-gray-900/60 mt-2">Calculating delivery charge…</p>
           )}
         </section>
 
         {/* Billing address */}
-        <section className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5">
-          <h2 className="text-sm font-semibold text-[var(--foreground)] mb-3 flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-[var(--accent)] text-white text-xs flex items-center justify-center">4</span>
+        <section className="rounded-lg border border-gray-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">4</span>
             Billing address
           </h2>
           <label className="flex items-center gap-2 cursor-pointer mb-3">
@@ -448,7 +448,7 @@ export default function CheckoutClient({
               type="checkbox"
               checked={billingSameAsShipping}
               onChange={(e) => setBillingSameAsShipping(e.target.checked)}
-              className="rounded text-[var(--accent)]"
+              className="rounded text-blue-600"
             />
             <span className="text-sm">Same as shipping address</span>
           </label>
@@ -456,7 +456,7 @@ export default function CheckoutClient({
             <select
               value={billingAddressId ?? ""}
               onChange={(e) => setBillingAddressId(Number(e.target.value) || null)}
-              className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-background text-sm"
+              className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-900 text-sm"
             >
               <option value="">Select billing address</option>
               {addresses.filter((a) => a.type === "BILLING" || a.type === "SHIPPING").map((a) => (
@@ -467,19 +467,19 @@ export default function CheckoutClient({
         </section>
 
         {/* Cart items (collapsible) */}
-        <section className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-5 lg:hidden">
-          <h2 className="text-sm font-semibold text-[var(--foreground)] mb-3">Order items</h2>
-          <ul className="divide-y divide-[var(--border)]">
+        <section className="rounded-lg border border-gray-200 bg-white p-5 lg:hidden">
+          <h2 className="text-sm font-semibold text-gray-900 mb-3">Order items</h2>
+          <ul className="divide-y divide-gray-200">
             {grouped.flatMap((g) =>
               g.items.map((item) => (
                 <li key={item.id} className="py-3 flex justify-between items-start gap-2">
                   <div>
                     <p className="font-medium text-sm">{item.productName}</p>
-                    <p className="text-xs text-[var(--foreground)]/60">
+                    <p className="text-xs text-gray-900/60">
                       {formatDate(item.rentalStart)} → {formatDate(item.rentalEnd)} • Qty {item.quantity}
                     </p>
                   </div>
-                  <p className="text-sm font-medium text-[var(--accent)]">Rs.{item.price * item.quantity}</p>
+                  <p className="text-sm font-medium text-blue-600">Rs.{item.price * item.quantity}</p>
                 </li>
               ))
             )}
@@ -489,9 +489,9 @@ export default function CheckoutClient({
 
       {/* Right: Order summary - sticky */}
       <div className="lg:col-span-2">
-        <div className="lg:sticky lg:top-24 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] overflow-hidden">
-          <div className="p-5 border-b border-[var(--border)]">
-            <h2 className="font-semibold text-[var(--foreground)] flex items-center gap-2">
+        <div className="lg:sticky lg:top-24 rounded-lg border border-gray-200 bg-white overflow-hidden">
+          <div className="p-5 border-b border-gray-200">
+            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
               <ChevronDown className="w-4 h-4 lg:hidden" />
               Order summary
             </h2>
@@ -499,27 +499,27 @@ export default function CheckoutClient({
           <div className="p-5 max-h-[50vh] overflow-y-auto">
             {grouped.map((group) => (
               <div key={group.vendorId} className="mb-4 last:mb-0">
-                <p className="text-xs font-medium text-[var(--foreground)]/70 mb-2">
+                <p className="text-xs font-medium text-gray-600 mb-2">
                   {group.vendorCompanyName ?? group.vendorName}
                 </p>
                 <ul className="space-y-2">
                   {group.items.map((item) => (
                     <li key={item.id} className="flex justify-between text-sm">
                       <span className="truncate">{item.productName} × {item.quantity}</span>
-                      <span className="text-[var(--accent)] shrink-0">Rs.{item.price * item.quantity}</span>
+                      <span className="text-blue-600 shrink-0">Rs.{item.price * item.quantity}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
           </div>
-          <div className="p-5 border-t border-[var(--border)] space-y-2">
+          <div className="p-5 border-t border-gray-200 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--foreground)]/80">Subtotal</span>
+              <span className="text-gray-900/80">Subtotal</span>
               <span>Rs.{subtotal}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--foreground)]/80">Delivery</span>
+              <span className="text-gray-900/80">Delivery</span>
               {fulfillmentType === "STORE_PICKUP" ? (
                 <span>Store pickup</span>
               ) : deliveryLoading ? (
@@ -529,7 +529,7 @@ export default function CheckoutClient({
               )}
             </div>
             {deliveryResult?.perVendor && deliveryResult.perVendor.some((p) => p.charge > 0) && (
-              <div className="pl-2 text-xs text-[var(--foreground)]/60 space-y-0.5">
+              <div className="pl-2 text-xs text-gray-900/60 space-y-0.5">
                 {deliveryResult.perVendor.filter((p) => p.charge > 0).map((p) => (
                   <div key={p.vendorId} className="flex justify-between">
                     <span>{p.vendorName}</span>
@@ -538,12 +538,12 @@ export default function CheckoutClient({
                 ))}
               </div>
             )}
-            <div className="flex justify-between font-semibold text-[var(--foreground)] pt-2 border-t border-[var(--border)]">
+            <div className="flex justify-between font-semibold text-gray-900 pt-2 border-t border-gray-200">
               <span>Total</span>
-              <span className="text-[var(--accent)]">Rs.{total}</span>
+              <span className="text-blue-600">Rs.{total}</span>
             </div>
           </div>
-          <div className="p-5 bg-background/50">
+          <div className="p-5 bg-gray-50">
             <button
               type="button"
               disabled={
@@ -553,7 +553,7 @@ export default function CheckoutClient({
                 (fulfillmentType === "DELIVERY" && deliveryLoading)
               }
               onClick={handleConfirmOrder}
-              className="w-full rounded-lg bg-[var(--accent)] text-white font-medium py-3 hover:bg-[var(--accent-hover)] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-lg bg-blue-600 text-white font-medium py-3 hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? "Confirming…" : "Confirm order"}
             </button>

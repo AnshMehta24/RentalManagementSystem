@@ -48,6 +48,7 @@ type QuotationWithRelations = Quotation & {
         return: any | null;
       })
     | null;
+  paymentLinkLogs?: { id: number; sentToEmail: string; createdAt: Date }[];
 };
 
 export default async function QuotationDetailPage({

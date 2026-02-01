@@ -133,6 +133,7 @@ model User {
 
   notifications Notification[]
   activities    ActivityLog[]
+  quotationPaymentLinkLogsSent QuotationPaymentLinkLog[]
 
   wishlistItems WishlistItem[]
 
@@ -326,6 +327,7 @@ model Quotation {
 
   items QuotationItem[]
   order RentalOrder?
+  paymentLinkLogs QuotationPaymentLinkLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -550,6 +552,21 @@ model ActivityLog {
 
   user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model QuotationPaymentLinkLog {
+  id           Int      @id @default(autoincrement())
+  quotationId  Int
+  checkoutUrl  String
+  sentToEmail  String
+  sentByUserId Int?
+
+  quotation Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  sentBy    User?     @relation(fields: [sentByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([quotationId])
 }
 
 model VendorDeliveryConfig {

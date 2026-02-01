@@ -9,12 +9,15 @@ export default async function OrdersPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <>
       <Header showSearch />
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Quotations & orders</h1>
-        <OrdersClient quotations={quotations} orders={orders} />
-      </div>
-    </div>
+      <main className="flex-1 overflow-auto p-6 md:p-8">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">Quotations & orders</h1>
+          <p className="text-gray-600 text-sm mb-6">View your quotations and order history.</p>
+          <OrdersClient quotations={quotations} orders={orders} />
+        </div>
+      </main>
+    </>
   );
 }

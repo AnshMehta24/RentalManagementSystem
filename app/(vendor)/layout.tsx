@@ -9,6 +9,7 @@ import {
   FileText,
   BarChart3,
   Settings,
+  LogOut,
 } from "lucide-react";
 
 const nav = [
@@ -61,6 +62,15 @@ export default function VendorLayout({
             );
           })}
         </nav>
+        <div className="p-2 border-t border-gray-200">
+          <Link
+            href="/api/auth/logout?redirect=/login"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+          >
+            <LogOut className="w-5 h-5 shrink-0" />
+            Logout
+          </Link>
+        </div>
       </aside>
       <main className="flex-1 overflow-auto p-6 md:p-8 bg-gray-50">{children}</main>
     </div>

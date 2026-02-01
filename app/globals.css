@@ -97,3 +97,23 @@ input[type="range"]::-moz-range-thumb {
 .orderQuotationMainCard {
   padding: 20px !important;
 }
+
+/* Print: show only invoice content */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .invoice-print-area,
+  .invoice-print-area * {
+    visibility: visible;
+  }
+  .invoice-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    box-shadow: none;
+    background: white;
+  }
+}

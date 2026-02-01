@@ -16,7 +16,7 @@ const publicRoutes = [
 const publicApiRoutes = [
   "/api/auth/login",
   "/api/auth/signup",
-  
+  "/api/stripe/webhook"
 ];
 
 export async function proxy(request: NextRequest) {

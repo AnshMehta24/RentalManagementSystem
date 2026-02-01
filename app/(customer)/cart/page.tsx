@@ -12,16 +12,19 @@ export default async function CartPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <>
       <Header showSearch />
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Checkout</h1>
+      <main className="flex-1 overflow-auto p-6 md:p-8">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">Checkout</h1>
+          <p className="text-gray-600 text-sm mb-6">Review your cart and complete your order.</p>
         <CheckoutClient
           initialGrouped={grouped}
           initialAddresses={addresses}
           customerEmail={user?.email ?? ""}
         />
-      </div>
-    </div>
+        </div>
+      </main>
+    </>
   );
 }
