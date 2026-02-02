@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCustomerProfile } from "@/app/(customer)/actions/profile";
-import Header from "@/componenets/Header";
+import Header from "@/components/productPage/Header";
 import ChangePasswordForm from "./ChangePasswordForm";
 import AddressList from "./AddressList";
 import { User, Mail, Calendar } from "lucide-react";

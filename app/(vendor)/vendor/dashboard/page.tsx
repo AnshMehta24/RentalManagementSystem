@@ -27,7 +27,7 @@ export default async function VendorDashboard(): Promise<JSX.Element> {
         </div>
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <h3 className="text-sm font-medium text-gray-600">Total Revenue</h3>
-          <p className="text-2xl font-bold text-gray-900">₹{data.totalRevenue}</p>
+          <p className="text-2xl font-bold text-gray-900">₹{data.totalRevenue.toFixed(2)}</p>
         </div>
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <h3 className="text-sm font-medium text-gray-600">Inventory Items</h3>

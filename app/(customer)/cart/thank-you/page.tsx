@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Header from "@/componenets/Header";
+import Header from "@/components/productPage/Header";
 import { CheckCircle2 } from "lucide-react";
 
 interface ThankYouPageProps {

@@ -1,6 +1,6 @@
 import { getWishlist } from "@/app/(customer)/actions/wishlist";
-import WishlistClient from "@/componenets/WishlistClient";
-import Header from "@/componenets/Header";
+import WishlistClient from "@/components/productPage/WishlistClient";
+import Header from "@/components/productPage/Header";
 
 export default async function WishlistPage() {
   const products = await getWishlist();

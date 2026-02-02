@@ -17,14 +17,17 @@ export async function POST(request: NextRequest) {
   const sig = request.headers.get("stripe-signature");
 
   if (!sig || !webhookSecret) {
-    return NextResponse.json({ error: "Invalid webhook config" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid webhook config" },
+      { status: 400 },
+    );
   }
 
   let event: Stripe.Event;
 
   try {
     event = stripeInstance.webhooks.constructEvent(body, sig, webhookSecret);
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -37,7 +40,10 @@ export async function POST(request: NextRequest) {
 
       const quotationId = parseInt(quotationIdRaw, 10);
       if (!Number.isInteger(quotationId)) {
-        return NextResponse.json({ error: "Invalid quotationId" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Invalid quotationId" },
+          { status: 400 },
+        );
       }
 
       const quotation = await prisma.quotation.findUnique({
@@ -45,14 +51,17 @@ export async function POST(request: NextRequest) {
         include: { items: true, coupon: true, order: true },
       });
 
-      if (!quotation || quotation.status !== QuotationStatus.SENT || quotation.order) {
+      if (
+        !quotation ||
+        quotation.status !== QuotationStatus.SENT ||
+        quotation.order
+      ) {
         return NextResponse.json({ received: true });
       }
 
       const amountPaid = (session.amount_total ?? 0) / 100;
       const subtotal = (session.amount_subtotal ?? 0) / 100;
-      const discountAmt =
-        (session.total_details?.amount_discount ?? 0) / 100;
+      const discountAmt = (session.total_details?.amount_discount ?? 0) / 100;
 
       const paymentIntentId =
         typeof session.payment_intent === "string"
@@ -60,7 +69,10 @@ export async function POST(request: NextRequest) {
           : session.payment_intent?.id;
 
       if (!paymentIntentId) {
-        return NextResponse.json({ error: "Missing payment intent" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Missing payment intent" },
+          { status: 400 },
+        );
       }
 
       await prisma.$transaction(async (tx) => {

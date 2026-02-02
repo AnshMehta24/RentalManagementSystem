@@ -11,6 +11,7 @@ const publicRoutes = [
   "/terms",
   "/privacy",
   "/super-admin/login",
+  // '/products'
 ];
 
 const publicApiRoutes = [

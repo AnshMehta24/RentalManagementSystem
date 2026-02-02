@@ -10,7 +10,6 @@ import { sendPaymentLinkEmail } from "@/lib/email/sendPaymentLink";
 
 type Action = "send" | "cancel";
 
-/** Order is created only when payment completes (Stripe webhook), not on confirm. */
 export async function quotationAction(quotationId: number, action: Action) {
   const user = await getCurrentUser();
 
@@ -31,7 +30,9 @@ export async function quotationAction(quotationId: number, action: Action) {
 
   if (action === "send" && quotation.status === "DRAFT") {
     if (!quotation.items.length) {
-      throw new Error("Quotation must have at least one product before sending.");
+      throw new Error(
+        "Quotation must have at least one product before sending.",
+      );
     }
     updated = await prisma.quotation.update({
       where: { id: quotationId },
@@ -45,7 +46,9 @@ export async function quotationAction(quotationId: number, action: Action) {
       include: quotationInclude,
     });
   } else {
-    throw new Error(`Cannot ${action} quotation from status ${quotation.status}`);
+    throw new Error(
+      `Cannot ${action} quotation from status ${quotation.status}`,
+    );
   }
 
   await prisma.activityLog.create({
@@ -72,8 +75,10 @@ export async function getVendorVariantsForQuotation(quotationId: number) {
     where: { id: quotationId },
     select: { vendorId: true, status: true },
   });
-  if (!quotation || quotation.vendorId !== user.id) throw new Error("Not found or not yours");
-  if (quotation.status !== "DRAFT") throw new Error("Can only edit items when quotation is in DRAFT");
+  if (!quotation || quotation.vendorId !== user.id)
+    throw new Error("Not found or not yours");
+  if (quotation.status !== "DRAFT")
+    throw new Error("Can only edit items when quotation is in DRAFT");
 
   const products = await prisma.product.findMany({
     where: { vendorId: user.id, published: true },
@@ -98,7 +103,10 @@ export type AddQuotationItemInput = {
   price: number;
 };
 
-export async function addQuotationItem(quotationId: number, input: AddQuotationItemInput) {
+export async function addQuotationItem(
+  quotationId: number,
+  input: AddQuotationItemInput,
+) {
   const user = await getCurrentUser();
   if (!user || user.role !== "VENDOR") throw new Error("Unauthorized");
 
@@ -106,8 +114,10 @@ export async function addQuotationItem(quotationId: number, input: AddQuotationI
     where: { id: quotationId },
     select: { vendorId: true, status: true },
   });
-  if (!quotation || quotation.vendorId !== user.id) throw new Error("Not found or not yours");
-  if (quotation.status !== "DRAFT") throw new Error("Can only add items when quotation is in DRAFT");
+  if (!quotation || quotation.vendorId !== user.id)
+    throw new Error("Not found or not yours");
+  if (quotation.status !== "DRAFT")
+    throw new Error("Can only add items when quotation is in DRAFT");
 
   const variant = await prisma.productVariant.findFirst({
     where: { id: input.variantId, product: { vendorId: user.id } },
@@ -115,7 +125,8 @@ export async function addQuotationItem(quotationId: number, input: AddQuotationI
   if (!variant) throw new Error("Variant not found or not yours");
 
   if (input.quantity < 1) throw new Error("Quantity must be at least 1");
-  if (new Date(input.rentalStart) >= new Date(input.rentalEnd)) throw new Error("Rental end must be after rental start");
+  if (new Date(input.rentalStart) >= new Date(input.rentalEnd))
+    throw new Error("Rental end must be after rental start");
   if (input.price < 0) throw new Error("Price must be non-negative");
 
   const updated = await prisma.quotation.update({
@@ -145,7 +156,10 @@ export type UpdateQuotationItemInput = {
   price?: number;
 };
 
-export async function updateQuotationItem(quotationItemId: number, data: UpdateQuotationItemInput) {
+export async function updateQuotationItem(
+  quotationItemId: number,
+  data: UpdateQuotationItemInput,
+) {
   const user = await getCurrentUser();
   if (!user || user.role !== "VENDOR") throw new Error("Unauthorized");
 
@@ -153,23 +167,37 @@ export async function updateQuotationItem(quotationItemId: number, data: UpdateQ
     where: { id: quotationItemId },
     include: { quotation: true },
   });
-  if (!item || item.quotation.vendorId !== user.id) throw new Error("Not found or not yours");
-  if (item.quotation.status !== "DRAFT") throw new Error("Can only edit items when quotation is in DRAFT");
+  if (!item || item.quotation.vendorId !== user.id)
+    throw new Error("Not found or not yours");
+  if (item.quotation.status !== "DRAFT")
+    throw new Error("Can only edit items when quotation is in DRAFT");
 
-  const payload: { quantity?: number; rentalStart?: Date; rentalEnd?: Date; price?: number } = {};
+  const payload: {
+    quantity?: number;
+    rentalStart?: Date;
+    rentalEnd?: Date;
+    price?: number;
+  } = {};
   if (data.quantity !== undefined) {
     if (data.quantity < 1) throw new Error("Quantity must be at least 1");
     payload.quantity = data.quantity;
   }
-  if (data.rentalStart !== undefined) payload.rentalStart = new Date(data.rentalStart);
-  if (data.rentalEnd !== undefined) payload.rentalEnd = new Date(data.rentalEnd);
+  if (data.rentalStart !== undefined)
+    payload.rentalStart = new Date(data.rentalStart);
+  if (data.rentalEnd !== undefined)
+    payload.rentalEnd = new Date(data.rentalEnd);
   if (data.price !== undefined) {
     if (data.price < 0) throw new Error("Price must be non-negative");
     payload.price = data.price;
   }
-  if (Object.keys(payload).length === 0) return getQuotationById(item.quotationId);
+  if (Object.keys(payload).length === 0)
+    return getQuotationById(item.quotationId);
 
-  if (payload.rentalStart && payload.rentalEnd && payload.rentalStart >= payload.rentalEnd) {
+  if (
+    payload.rentalStart &&
+    payload.rentalEnd &&
+    payload.rentalStart >= payload.rentalEnd
+  ) {
     throw new Error("Rental end must be after rental start");
   }
 
@@ -191,10 +219,14 @@ export async function deleteQuotationItem(quotationItemId: number) {
     where: { id: quotationItemId },
     include: { quotation: { include: { items: true } } },
   });
-  if (!item || item.quotation.vendorId !== user.id) throw new Error("Not found or not yours");
-  if (item.quotation.status !== "DRAFT") throw new Error("Can only delete items when quotation is in DRAFT");
+  if (!item || item.quotation.vendorId !== user.id)
+    throw new Error("Not found or not yours");
+  if (item.quotation.status !== "DRAFT")
+    throw new Error("Can only delete items when quotation is in DRAFT");
   if (item.quotation.items.length <= 1) {
-    throw new Error("Quotation must have at least one product. Add another before removing this one.");
+    throw new Error(
+      "Quotation must have at least one product. Add another before removing this one.",
+    );
   }
 
   await prisma.quotationItem.delete({
@@ -211,9 +243,11 @@ export async function deleteQuotationItem(quotationItemId: number) {
   return updated;
 }
 
-
 /** Apply coupon to SENT quotation. */
-export async function applyCouponToQuotation(quotationId: number, code: string) {
+export async function applyCouponToQuotation(
+  quotationId: number,
+  code: string,
+) {
   const user = await getCurrentUser();
   if (!user || user.role !== "VENDOR") throw new Error("Unauthorized");
 
@@ -221,8 +255,10 @@ export async function applyCouponToQuotation(quotationId: number, code: string) 
     where: { id: quotationId },
     select: { vendorId: true, status: true },
   });
-  if (!quotation || quotation.vendorId !== user.id) throw new Error("Not found or not yours");
-  if (quotation.status !== "SENT") throw new Error("Can only apply coupon when quotation is sent");
+  if (!quotation || quotation.vendorId !== user.id)
+    throw new Error("Not found or not yours");
+  if (quotation.status !== "SENT")
+    throw new Error("Can only apply coupon when quotation is sent");
 
   const coupon = await prisma.coupon.findUnique({
     where: { code: code.trim().toUpperCase(), isActive: true },
@@ -251,8 +287,10 @@ export async function removeCouponFromQuotation(quotationId: number) {
     where: { id: quotationId },
     select: { vendorId: true, status: true },
   });
-  if (!quotation || quotation.vendorId !== user.id) throw new Error("Not found or not yours");
-  if (quotation.status !== "SENT") throw new Error("Can only change coupon when quotation is sent");
+  if (!quotation || quotation.vendorId !== user.id)
+    throw new Error("Not found or not yours");
+  if (quotation.status !== "SENT")
+    throw new Error("Can only change coupon when quotation is sent");
 
   const updated = await prisma.quotation.update({
     where: { id: quotationId },
@@ -263,8 +301,10 @@ export async function removeCouponFromQuotation(quotationId: number) {
   return updated;
 }
 
-/** Update delivery charge on SENT quotation. */
-export async function updateQuotationDeliveryCharge(quotationId: number, deliveryCharge: number) {
+export async function updateQuotationDeliveryCharge(
+  quotationId: number,
+  deliveryCharge: number,
+) {
   const user = await getCurrentUser();
   if (!user || user.role !== "VENDOR") throw new Error("Unauthorized");
 
@@ -272,8 +312,10 @@ export async function updateQuotationDeliveryCharge(quotationId: number, deliver
     where: { id: quotationId },
     select: { vendorId: true, status: true },
   });
-  if (!quotation || quotation.vendorId !== user.id) throw new Error("Not found or not yours");
-  if (quotation.status !== "SENT") throw new Error("Can only update delivery when quotation is sent");
+  if (!quotation || quotation.vendorId !== user.id)
+    throw new Error("Not found or not yours");
+  if (quotation.status !== "SENT")
+    throw new Error("Can only update delivery when quotation is sent");
   if (deliveryCharge < 0) throw new Error("Delivery charge cannot be negative");
 
   const updated = await prisma.quotation.update({
@@ -285,18 +327,28 @@ export async function updateQuotationDeliveryCharge(quotationId: number, deliver
   return updated;
 }
 
-/** Create Stripe Checkout Session for quotation; order is created on payment success (webhook). Emails customer, then logs the link in DB. Does not return the URL to the client. */
-export async function createPaymentLinkForQuotation(quotationId: number): Promise<{ success: true }> {
+export async function createPaymentLinkForQuotation(
+  quotationId: number,
+): Promise<{ success: true }> {
   const user = await getCurrentUser();
   if (!user || user.role !== "VENDOR") throw new Error("Unauthorized");
 
   const quotation = await prisma.quotation.findUnique({
     where: { id: quotationId },
-    include: { items: true, coupon: true, customer: true, vendor: true, order: true },
+    include: {
+      items: true,
+      coupon: true,
+      customer: true,
+      vendor: true,
+      order: true,
+    },
   });
-  if (!quotation || quotation.vendorId !== user.id) throw new Error("Not found or not yours");
-  if (quotation.status !== "SENT") throw new Error("Payment link can only be created for sent quotations");
-  if (quotation.order) throw new Error("Order already exists for this quotation");
+  if (!quotation || quotation.vendorId !== user.id)
+    throw new Error("Not found or not yours");
+  if (quotation.status !== "SENT")
+    throw new Error("Payment link can only be created for sent quotations");
+  if (quotation.order)
+    throw new Error("Order already exists for this quotation");
 
   const existingLog = await prisma.quotationPaymentLinkLog.findFirst({
     where: { quotationId },
@@ -313,9 +365,7 @@ export async function createPaymentLinkForQuotation(quotationId: number): Promis
   });
   if (total <= 0) throw new Error("Total must be greater than zero");
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
+  const baseUrl = "http://localhost:3000";
 
   const session = await stripeInstance.checkout.sessions.create({
     mode: "payment",
@@ -328,14 +378,14 @@ export async function createPaymentLinkForQuotation(quotationId: number): Promis
             name: `Quotation #${quotationId.toString().padStart(6, "0")} – Rental`,
             description: `${quotation.customer.name} – ${quotation.items.length} item(s)`,
           },
-          unit_amount: Math.round(total * 100), // Stripe uses paise for INR
+          unit_amount: Math.round(total * 100),
         },
         quantity: 1,
       },
     ],
     metadata: { quotationId: String(quotationId) },
-    success_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${baseUrl}/vendor/quotations/${quotationId}`,
+    success_url: `${baseUrl}/orders`,
+    cancel_url: `${baseUrl}/orders`,
     customer_email: quotation.customer.email,
   });
 
@@ -426,7 +476,6 @@ const quotationInclude = {
   },
 } satisfies Prisma.QuotationInclude;
 
-export type QuotationWithRelations =
-  Prisma.QuotationGetPayload<{
-    include: typeof quotationInclude;
-  }>;
+export type QuotationWithRelations = Prisma.QuotationGetPayload<{
+  include: typeof quotationInclude;
+}>;
