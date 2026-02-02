@@ -126,7 +126,7 @@ export default function SuperAdminDashboard() {
             <span className="text-sm font-medium text-gray-600">Total Revenue</span>
             <IndianRupee className="w-7 h-7 text-blue-600" />
           </div>
-          <p className="text-xl font-bold text-gray-900 mt-2">₹{d.totalRevenue.toLocaleString("en-IN")}</p>
+          <p className="text-xl font-bold text-gray-900 mt-2">₹{d.totalRevenue.toFixed(2)}</p>
         </div>
         <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
           <div className="flex items-center justify-between">

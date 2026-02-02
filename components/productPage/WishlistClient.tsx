@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import {
-  getWishlist,
   removeWishlistItemById,
   type WishlistProduct,
 } from "@/app/(customer)/actions/wishlist";

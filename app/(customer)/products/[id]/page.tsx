@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getWishlistProductIds } from "@/app/(customer)/actions/wishlist";
-import ProductDetail from "@/componenets/ProductDetail";
+import ProductDetail from "@/components/productPage/ProductDetail";
 import type {
   ProductDetailData,
   AttributeOption,
   VariantOption,
-} from "@/componenets/ProductDetail";
+} from "@/components/productPage/ProductDetail";
 
 function getPriceLabel(unit: string): string {
   const u = unit?.toLowerCase() ?? "";

@@ -121,7 +121,7 @@ export default function Home(): JSX.Element {
             your rental operations effortlessly.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in-delay-2">
+          {/* <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in-delay-2">
             <a
               href="/signup"
               className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transform flex items-center gap-2"
@@ -135,7 +135,7 @@ export default function Home(): JSX.Element {
             >
               View Demo
             </a>
-          </div>
+          </div> */}
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto animate-fade-in-delay-3">

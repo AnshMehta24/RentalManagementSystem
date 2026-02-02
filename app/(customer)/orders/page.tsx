@@ -1,6 +1,6 @@
 import { getCustomerQuotations, getCustomerOrders } from "@/app/(customer)/actions/orders";
-import OrdersClient from "@/componenets/OrdersClient";
-import Header from "@/componenets/Header";
+import OrdersClient from "@/components/productPage/OrdersClient";
+import Header from "@/components/productPage/Header";
 
 export default async function OrdersPage() {
   const [quotations, orders] = await Promise.all([

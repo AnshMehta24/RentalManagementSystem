@@ -1,4 +1,4 @@
-import ProductsClient from "@/componenets/ProductList";
+import ProductsClient from "@/components/productPage/ProductList";
 import { getWishlistProductIds } from "@/app/(customer)/actions/wishlist";
 import { prisma } from "@/lib/prisma";
 

@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import Header from "@/componenets/Header";
+import Header from "@/components/productPage/Header";
 import { getCustomerQuotationById } from "@/app/(customer)/actions/orders";
 import { getCurrentUser } from "@/lib/getCurrentUser";
 import { FileText, ArrowLeft } from "lucide-react";

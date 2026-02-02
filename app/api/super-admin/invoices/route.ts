@@ -5,13 +5,19 @@ import { requireSuperAdmin } from "@/lib/superAdminAuth";
 export async function GET(request: NextRequest) {
   const auth = await requireSuperAdmin(request);
   if (!auth) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 },
+    );
   }
 
   try {
     const { searchParams } = new URL(request.url);
     const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
-    const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") || "20", 10)));
+    const limit = Math.min(
+      50,
+      Math.max(1, parseInt(searchParams.get("limit") || "20", 10)),
+    );
     const status = searchParams.get("status")?.trim();
     const search = searchParams.get("search")?.trim() || "";
     const dateFrom = searchParams.get("dateFrom")?.trim();
@@ -19,18 +25,30 @@ export async function GET(request: NextRequest) {
 
     const where: {
       status?: string;
-      createdAt?: { gte?: Date; lte?: Date };
-      order?: { customer?: { OR: { name?: { contains: string; mode: "insensitive" }; email?: { contains: string; mode: "insensitive" } }[] };
+      createdAt?: {
+        gte?: Date;
+        lte?: Date;
+      };
+      order?: {
+        customer?: {
+          OR: {
+            name?: { contains: string; mode: "insensitive" };
+            email?: { contains: string; mode: "insensitive" };
+          }[];
+        };
+      };
     } = {};
     if (status) where.status = status;
     if (dateFrom) {
       const d = new Date(dateFrom);
-      if (!Number.isNaN(d.getTime())) where.createdAt = { ...where.createdAt, gte: d };
+      if (!Number.isNaN(d.getTime()))
+        where.createdAt = { ...where.createdAt, gte: d };
     }
     if (dateTo) {
       const dTo = new Date(dateTo);
       dTo.setHours(23, 59, 59, 999);
-      if (!Number.isNaN(dTo.getTime())) where.createdAt = { ...where.createdAt, lte: dTo };
+      if (!Number.isNaN(dTo.getTime()))
+        where.createdAt = { ...where.createdAt, lte: dTo };
     }
     if (search) {
       where.order = {
@@ -51,7 +69,11 @@ export async function GET(request: NextRequest) {
             include: {
               customer: { select: { id: true, name: true, email: true } },
               quotation: {
-                select: { vendor: { select: { id: true, name: true, companyName: true } } },
+                select: {
+                  vendor: {
+                    select: { id: true, name: true, companyName: true },
+                  },
+                },
               },
             },
           },
@@ -94,13 +116,17 @@ export async function GET(request: NextRequest) {
       ];
       const escape = (v: unknown) => {
         const s = v == null ? "" : String(v);
-        return s.includes(",") || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s;
+        return s.includes(",") || s.includes('"')
+          ? `"${s.replace(/"/g, '""')}"`
+          : s;
       };
       const rows = list.map((inv) => [
         inv.id,
         inv.orderId,
         inv.order?.customer?.name ?? "",
-        inv.order?.quotation?.vendor?.companyName ?? inv.order?.quotation?.vendor?.name ?? "",
+        inv.order?.quotation?.vendor?.companyName ??
+          inv.order?.quotation?.vendor?.name ??
+          "",
         inv.rentalAmount,
         inv.securityDeposit,
         inv.deliveryCharge,
@@ -110,7 +136,10 @@ export async function GET(request: NextRequest) {
         inv.paymentStatus,
         inv.createdAt.toISOString().slice(0, 10),
       ]);
-      const csv = [headers.join(","), ...rows.map((r) => r.map(escape).join(","))].join("\n");
+      const csv = [
+        headers.join(","),
+        ...rows.map((r) => r.map(escape).join(",")),
+      ].join("\n");
       return new NextResponse(csv, {
         headers: {
           "Content-Type": "text/csv; charset=utf-8",
@@ -134,7 +163,7 @@ export async function GET(request: NextRequest) {
         error: "Internal server error",
         message: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

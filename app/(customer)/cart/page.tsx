@@ -1,8 +1,8 @@
 import { getCart } from "@/app/(customer)/actions/cart";
 import { getCustomerAddresses } from "@/app/(customer)/actions/checkout";
 import { getCurrentUser } from "@/lib/getCurrentUser";
-import CheckoutClient from "@/componenets/CheckoutClient";
-import Header from "@/componenets/Header";
+import CheckoutClient from "@/components/productPage/CheckoutClient";
+import Header from "@/components/productPage/Header";
 
 export default async function CartPage() {
   const [grouped, addresses, user] = await Promise.all([
